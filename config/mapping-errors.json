@@ -1,0 +1,59 @@
+{
+    "properties": {
+        "HeaderXForwardedFor": {
+            "type": "keyword"
+        },
+        "client": {
+            "type": "ip"
+        },
+        "env": {
+            "type": "keyword"
+        },
+        "application": {
+            "type": "keyword"
+        },
+        "node": {
+            "type": "keyword"
+        },
+        "site": {
+            "type": "keyword"
+        },
+        "apacheModule": {
+            "type": "keyword"
+        },
+        "errorType": {
+            "type": "keyword"
+        },
+        "errorMessage": {
+            "type": "keyword"
+        },
+        "inFile": {
+            "type": "keyword"
+        },
+        "responseTime": {
+            "type": "double"
+        },
+        "backendRequestParams": {
+            "type": "object"
+        },
+        "backendRequest": {
+            "type": "keyword"
+        },
+        "inLine": {
+            "type": "integer"
+        },
+        "wpType": {
+            "type": "keyword"
+        },
+        "wpLocation": {
+            "type": "keyword"
+        },
+        "stackTrace": {
+            "type": "keyword"
+        },
+        "time": {
+            "type": "date",
+            "format": "yyyy-MM-dd HH:mm:ss Z"
+        }
+    }
+}

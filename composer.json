@@ -1,0 +1,11 @@
+{
+    "require": {
+        "elasticsearch/elasticsearch": "v7.17.1",
+        "foroco/php-browser-detection": "^2.3"
+    },
+    "config": {
+        "platform": {
+            "php": "7.4.32"
+        }
+    }
+}

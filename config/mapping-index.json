@@ -1,0 +1,62 @@
+{
+    "properties": {
+        "HeaderXForwardedFor": {
+            "type": "keyword"
+        },
+        "client": {
+            "type": "ip"
+        },
+        "host": {
+            "type": "keyword"
+        },
+        "port": {
+            "type": "integer"
+        },
+        "sentBytes": {
+            "type": "integer"
+        },
+        "status": {
+            "type": "integer"
+        },
+        "application": {
+            "type": "keyword"
+        },
+        "env": {
+            "type": "keyword"
+        },
+        "node": {
+            "type": "keyword"
+        },
+        "requestMethod": {
+            "type": "keyword"
+        },
+        "requestURI": {
+            "type": "keyword"
+        },
+        "requestVersion": {
+            "type": "keyword"
+        },
+        "requestQuery": {
+            "type": "keyword"
+        },
+        "referer": {
+            "type": "keyword"
+        },
+        "userAgent": {
+            "type": "keyword"
+        },
+        "referer": {
+            "type": "keyword"
+        },
+        "servedTimeMiliSec": {
+            "type": "integer"
+        },
+        "deviceType": {
+            "type": "keyword"
+        },
+        "time": {
+            "type": "date",
+            "format": "yyyy-MM-dd HH:mm:ss Z"
+        }
+    }
+}
