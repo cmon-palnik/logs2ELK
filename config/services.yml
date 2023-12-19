@@ -1,0 +1,5 @@
+imports:
+  - { resource: services/elastic.yml }
+  - { resource: services/environment.yml }
+  - { resource: services/report.yml }
+  - { resource: services/cli.yml }

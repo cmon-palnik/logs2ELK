@@ -1,11 +1,46 @@
 {
+    "name": "palnik-cmon/logs2elk",
+    "type": "project",
     "require": {
-        "elasticsearch/elasticsearch": "v7.17.1",
-        "foroco/php-browser-detection": "^2.3"
+        "php": ">=8.2",
+        "ext-json": "*",
+        "ext-ctype": "*",
+        "ext-iconv": "*",
+        "symfony/framework-bundle": "^7.0",
+        "elasticsearch/elasticsearch": "^8.11.0",
+        "foroco/php-browser-detection": "^2.7",
+        "symfony/console": "^7.0",
+        "symfony/dotenv": "^7.0",
+        "symfony/runtime": "7.0.*",
+        "symfony/yaml": "^7.0"
     },
     "config": {
         "platform": {
-            "php": "7.4.32"
+            "php": "8.2"
+        },
+        "allow-plugins": {
+            "symfony/runtime": true,
+            "php-http/discovery": false
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Logs2ELK\\": "src/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "symfony/debug-pack": "*",
+        "symfony/profiler-pack": "*",
+        "symfony/var-dumper": "*",
+        "phpunit/phpunit": "^9.5",
+        "coduo/php-matcher": "^6.0"
+    },
+    "extra": {
+        "symfony": {
+            "allow-contrib": false,
+            "require": "5.0.*"
         }
     }
 }

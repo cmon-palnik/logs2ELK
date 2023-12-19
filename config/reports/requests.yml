@@ -1,0 +1,22 @@
+---
+results: 10000
+time_step: 60
+report_params:
+  index: 'index-*'
+  body:
+    size: 0
+    query:
+      bool:
+        filter:
+          - term:
+              env: 'prod'
+          - term:
+              application: 'api'
+          - range: []
+    aggs:
+      unique_values:
+        composite:
+          sources:
+            - unique_field:
+                terms:
+                  field: 'requestURI'

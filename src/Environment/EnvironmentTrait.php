@@ -1,0 +1,41 @@
+<?php
+
+namespace Logs2ELK\Environment;
+
+trait EnvironmentTrait
+{
+
+    const WPINDEX = "wpindex";
+    const WPERROR = "wperrors";
+    const INDEX = "index";
+    const ERROR = "errors";
+    const APPMSG = "appmsg";
+    const APPSYS = "appsys";
+    
+    const E_PRD = 'prod';
+    const E_DEV = 'dev';
+    const E_PREPROD = 'preprod';
+    const E_STAGE = 'stage';
+    const E_LOC = 'local';
+    const E_TEST = 'test';
+    
+    const TIMEFORMAT = "Y-m-d H:i:s O";
+
+    private $envs = [
+        self::E_DEV,
+        self::E_PRD,
+        self::E_PREPROD,
+        self::E_LOC,
+        self::E_TEST,
+        self::E_STAGE,
+    ];
+    
+    public $indexes = [
+        self::APPMSG,
+        self::APPSYS,
+        self::ERROR,
+        self::INDEX,
+        self::WPERROR,
+        self::WPINDEX,
+    ];
+}

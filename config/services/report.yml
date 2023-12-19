@@ -1,0 +1,12 @@
+services:
+  _defaults:
+    autowire: true
+    
+    
+  Logs2ELK\Report\Requests: ~
+
+  Logs2ELK\Report\Statuses: ~
+
+  Logs2ELK\Report\AverageClientToProxy: ~
+
+  

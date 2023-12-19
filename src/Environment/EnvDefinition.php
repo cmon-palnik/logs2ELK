@@ -1,68 +1,45 @@
 <?php
 
-use foroco\BrowserDetection;
+namespace Logs2ELK\Environment;
 
-class envDefinition
+use Exception;
+use foroco\BrowserDetection;
+use Logs2ELK\ConfigLoader;
+
+class EnvDefinition
 {
-    const WPINDEX = "wpindex";
-    const WPERROR = "wperrors";
-    const INDEX = "index";
-    const ERROR = "errors";
-    const APPMSG = "appmsg";
-    const APPSYS = "appsys";
-    const E_PRD = 'prod';
-    const E_DEV = 'dev';
-    const E_PREPROD = 'preprod';
-    const E_STAGE = 'stage';
-    const E_LOC = 'local';
-    const E_TEST = 'test';
-    const TIMEFORMAT = "Y-m-d H:i:s O";
+    use EnvironmentTrait;
 
     private $env = '';
     private $indexType = '';
     private $host = '';
-    private $envs = [
-        self::E_DEV,
-        self::E_PRD,
-        self::E_PREPROD,
-        self::E_LOC,
-        self::E_TEST,
-        self::E_STAGE,
-    ];
-    public $indexes = [
-        self::APPMSG,
-        self::APPSYS,
-        self::ERROR,
-        self::INDEX,
-        self::WPERROR,
-        self::WPINDEX,
-    ];
+
     public static $mapErrorFields = [
         'type', 'message', 'file', 'line', 'trace'
     ];
 
-    /** @var BrowserDetection */
-    private $browser;
     private $application = 'undefined';
 
-    public function __construct()
+    public function __construct(
+        private BrowserDetection $browser,
+        private ConfigLoader $loader
+    )
     {
         global $argv;
         $type = isset($argv[1]) ? $argv[1] : self::INDEX;
         if (!in_array($type, $this->indexes)) {
-            throw new Exception("Uknown index type: $type; allowed: " . json_encode($this->indexes) . PHP_EOL);
+            throw new Exception("Unknown index type: $type; allowed: " . json_encode($this->indexes) . PHP_EOL);
         }
         $this->indexType = $type;
         $env = isset($argv[2]) ? $argv[2] : self::E_DEV;
         if (!in_array($env, $this->envs)) {
-            throw new Exception("Uknown env type: $env; allowed: " . json_encode($this->envs) . PHP_EOL);
+            throw new Exception("Unknown env type: $env; allowed: " . json_encode($this->envs) . PHP_EOL);
         }
         $this->application = isset($argv[3]) ? $argv[3] : "undefined";
         $this->env = $env;
         $this->host = explode(".", gethostname())[0];
-        $this->browser = new BrowserDetection();
     }
-    
+
     public function buildIndexPrefix($indexType){
         return strtolower($indexType . '-' . $this->application . '-' . $this->env);
     }
@@ -74,10 +51,11 @@ class envDefinition
 
     public function getIndexParams($index)
     {
+        $mapping = $this->loader->loadYaml("mappings/{$this->indexType}.yml");
         return [
             'index' => $index,
             'body' => [
-                'mappings' => json_decode(file_get_contents(__DIR__ . "/config/mapping-" . $this->indexType . ".json"), true)
+                'mappings' => $mapping['properties'], //json_decode(file_get_contents(__DIR__ . "/config/mapping-" . $this->indexType . ".json"), true)
             ]
         ];
     }
@@ -99,18 +77,18 @@ class envDefinition
             case self::INDEX:
             case self::WPINDEX:
                 if (isset($data['logLevel'])) {
-                    throw new Exception("Not a access log");
+                    throw new Exception("Not an access log");
                 }
                 return $this->parseLineTraffic($data);
             case self::WPERROR:
             case self::ERROR:
                 if (!isset($data['logLevel'])) {
-                    throw new Exception("Not a error log");
+                    throw new Exception("Not an error log");
                 }
                 return $this->parseLineError($data);
             case self::APPMSG:
                 if (!isset($data['level_name'])) {
-                    throw new Exception("Not a error log");
+                    throw new Exception("Not an error log");
                 }
                 return $this->parseLineMsg($data);
             case self::APPSYS:
@@ -251,5 +229,4 @@ class envDefinition
         }
         return false;
     }
-
 }

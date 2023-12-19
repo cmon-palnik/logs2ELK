@@ -1,0 +1,21 @@
+---
+results: 10000
+time_step: 60
+report_params:
+  index: 'index-*'
+  body:
+    aggs:
+      cnta:
+        terms:
+          field: 'status'
+    query:
+      bool:
+        filter:
+          - range:
+              time: []
+          - match_phrase:
+              application: 'api'
+          - match_phrase:
+              env: 'prod'
+          - match_phrase:
+              deviceType: 'mobile'
