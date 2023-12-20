@@ -7,11 +7,13 @@ class AverageClientToProxy extends AbstractReport
 
     public function getPart($requestURI = null)
     {
-        $from = strtotime("2023-10-01 13:00:00");
-        $to = strtotime('now');
-        $gteTime = gmdate("Y-m-d H:i:s O", $from);
-        $ltTime = gmdate("Y-m-d H:i:s O", $to);
-        $params = self::PARAMS;
+        $from = strtotime($this->dateFrom);
+        $to = $this->dateTo ? strtotime($this->dateTo) : time();
+
+        $gteTime = $this->gmdate($from);
+        $ltTime = $this->gmdate($to);
+
+        $params = self::$report_params;
         $params['body']['query']['bool']['filter'][0]['range'] = ['time' => ['gte' => $gteTime, 'lt' => $ltTime]];
 
         if (str_contains($requestURI, "{int}")) {

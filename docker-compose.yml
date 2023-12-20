@@ -6,11 +6,25 @@ services:
       dockerfile: docker/Dockerfile
     volumes:
       - .:/app
-      
+
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.11.3
     environment:
       - discovery.type=single-node
+      - TZ=Europe/Warsaw
     ports:
       - 9200:9200
       - 9300:9300
+
+  kibana:
+    depends_on:
+      - elasticsearch
+    image: docker.elastic.co/kibana/kibana:8.11.3
+    volumes:
+      - ./var/kibanadata:/usr/share/kibana/data
+    ports:
+      - 5601:5601
+    environment:
+      - SERVERNAME=kibana
+      - ELASTICSEARCH_HOSTS=elasticsearch:9200
+      - TZ=Europe/Warsaw

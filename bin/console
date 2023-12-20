@@ -12,7 +12,6 @@ if (!in_array(PHP_SAPI, ['cli', 'phpdbg', 'embed'], true)) {
 }
 
 set_time_limit(0);
-date_default_timezone_set(getenv('TZ'));
 
 require dirname(__DIR__).'/config/bootstrap.php';
 
@@ -30,6 +29,8 @@ if ($input->hasParameterOption('--no-debug', true)) {
 }
 
 require dirname(__DIR__).'/config/bootstrap.php';
+
+date_default_timezone_set($_ENV['TZ']);
 
 if ($_SERVER['APP_DEBUG']) {
     umask(0000);

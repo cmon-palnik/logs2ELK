@@ -5,6 +5,7 @@ namespace Logs2ELK\Environment;
 use Exception;
 use foroco\BrowserDetection;
 use Logs2ELK\ConfigLoader;
+use Symfony\Component\Console\Input\InputInterface;
 
 class EnvDefinition
 {
@@ -25,22 +26,19 @@ class EnvDefinition
         private ConfigLoader $loader
     )
     {
-        global $argv;
-        $type = isset($argv[1]) ? $argv[1] : self::INDEX;
-        if (!in_array($type, $this->indexes)) {
-            throw new Exception("Unknown index type: $type; allowed: " . json_encode($this->indexes) . PHP_EOL);
-        }
-        $this->indexType = $type;
-        $env = isset($argv[2]) ? $argv[2] : self::E_DEV;
-        if (!in_array($env, $this->envs)) {
-            throw new Exception("Unknown env type: $env; allowed: " . json_encode($this->envs) . PHP_EOL);
-        }
-        $this->application = isset($argv[3]) ? $argv[3] : "undefined";
-        $this->env = $env;
+
+    }
+
+    public function applyCLIArgs(InputInterface $input): void
+    {
+        $this->indexType = $input->getArgument('indexType');
+        $this->env = $input->getArgument('envType');
+        $this->application = $input->getArgument('applicationName');
         $this->host = explode(".", gethostname())[0];
     }
 
-    public function buildIndexPrefix($indexType){
+    public function buildIndexPrefix($indexType)
+    {
         return strtolower($indexType . '-' . $this->application . '-' . $this->env);
     }
 
@@ -51,16 +49,22 @@ class EnvDefinition
 
     public function getIndexParams($index)
     {
-        $mapping = $this->loader->loadYaml("mappings/{$this->indexType}.yml");
         return [
             'index' => $index,
             'body' => [
-                'mappings' => $mapping['properties'], //json_decode(file_get_contents(__DIR__ . "/config/mapping-" . $this->indexType . ".json"), true)
+                'mappings' => $this->loadMapping()
             ]
         ];
     }
 
-    public function parseLineByType($data)
+    public function loadMapping(?string $indexType = null): array
+    {
+        $indexType = $indexType ?: $this->indexType;
+        $mapping = $this->loader->loadYaml("mappings/$indexType.yml");
+        return $mapping['properties'];
+    }
+
+    public function parseLineByType($data = [])
     {
         if (isset($data['datetime'])) {
             $data['time'] = $data['datetime'];
@@ -69,9 +73,9 @@ class EnvDefinition
         $data['application'] = $this->application;
         $data['env'] = $this->env;
         $data['node'] = $this->host;
-        $data['time'] = date(self::TIMEFORMAT);
+        $data['time'] = date(ConfigLoader::getTimeFormat());
         $data['client'] = $this->getClientFromForwarded($data['HeaderXForwardedFor']);
-        
+
         switch ($this->indexType) {
             default:
             case self::INDEX:
@@ -182,7 +186,7 @@ class EnvDefinition
 
     public function parseLineSys($data)
     {
-        $data['time'] = date(self::TIMEFORMAT);
+        $data['time'] = date(ConfigLoader::getTimeFormat());
         unset($data['client'], $data['HeaderXForwardedFor']);
         $data['tcp'] = $this->getNetstatFormatted();
         $la = array_map(fn($v): float => (float) trim($v), explode(", ", explode("load average:", shell_exec("uptime"))[1]));

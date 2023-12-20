@@ -15,39 +15,29 @@ use Symfony\Component\Console\Output\OutputInterface;
     description: 'Update sysstat',
     hidden: false,
 )]
-class SysStatCommand extends Command
+class SysStatCommand extends AbstractEnvironmentCommand
 {
 
-    public function __construct(
-        private Client $client,
-        private EnvDefinition $ed,
-    )
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
-        parent::__construct();
-    }
-    
-    protected function execute(InputInterface $input, OutputInterface $output): int
-    {
+        parent::execute($input, $output);
+
+        $index = $this->ed->getIndexName();
+
+        if (!$this->client->indices()->exists(['index' => $index])) {
+            $indexParams = $this->ed->getIndexParams($index);
+            $this->client->indices()->create($indexParams);
+        }
 
         try {
-            $index = $this->ed->getIndexName();
+            $params = ['body' => $this->ed->parseLineByType(), 'index' => $index];
+            $response = $this->client->index($params);
+            $output->writeln($response);
 
-            if (!$this->client->indices()->exists(['index' => $index])) {
-                $indexParams = $this->ed->getIndexParams($index);
-                $this->client->indices()->create($indexParams);
-            }
-
-            try {
-                $params = ['body' => $this->ed->parseLineByType($data), 'index' => $index];
-                $response = $this->client->index($params);
-            } catch (Exception $ex) {
-                $output->writeln($ex->getMessage());
-            }
         } catch (Exception $ex) {
-            $msg = date("Y-m-d H:i:s") . " GLOBAL EXCEPTION " . PHP_EOL;
-            $msg .= $ex->getMessage() . PHP_EOL;
-            $msg .= $ex->getTraceAsString() . PHP_EOL;
-            $output->writeln($msg);
+            $output->writeln($ex->getMessage());
         }
+
+        return Command::SUCCESS;
     }
 }

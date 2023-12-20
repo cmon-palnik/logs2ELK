@@ -4,26 +4,49 @@ namespace Logs2ELK\Report;
 
 use Elastic\Elasticsearch\Client;
 use Logs2ELK\ConfigLoader;
+use Logs2ELK\GeneralException;
+use Logs2ELK\GeneralExceptionCode as Code;
+use Logs2ELK\WriteToOutputTrait;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class AbstractReport
 {
-    public static $results = 10000;
-    public static $time_step = 60;
-    public static $report_params = [];
-    
+    use WriteToOutputTrait;
+
+    public static int $results = 10000;
+    public static int $time_step = 60;
+    public static array $report_params = [];
+
     public string $filename = "";
-    
+    protected int $lastResults = 0;
+
+    protected string $dateFrom;
+    protected ?string $dateTo;
+
     public function __construct(
         protected Client $client,
-        protected ConfigLoader $loader
+        protected ConfigLoader $loader,
     )
     {
         $snake = $this->camelToSnake();
         $this->filename = $loader->getProjectDir('/var/report/') . $snake . '.json';
         $config = $loader->loadYaml("report/$snake.yml");
-        static::set('results');
-        static::set('time_step');
-        static::set('report_params');
+        static::set('results', $config);
+        static::set('time_step', $config);
+        static::set('report_params', $config);
+    }
+
+    public function setReportDates(InputInterface $input): self
+    {
+        $this->dateFrom = $input->getArgument('dateFrom');
+        $this->dateTo = $input->getArgument('dateTo');
+        return $this;
+    }
+
+    protected function gmdate(int $time): string
+    {
+        return gmdate(ConfigLoader::getTimeFormat(), $time);
     }
 
     public function read()
@@ -41,19 +64,15 @@ abstract class AbstractReport
         return $result;
     }
 
-    public function getPart($param = null)
-    {
-        return [];
-    }
-    
     private function camelToSnake()
     {
         return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', substr(get_class($this), strrpos(get_class($this), '\\') + 1)));
     }
-    
-    private static function set(int|string $var): void {
+
+    private static function set(int|string $var, array $config): void {
         if (isset($config[$var])) {
             static::$$var = $config[$var];
         }
     }
+
 }

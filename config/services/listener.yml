@@ -1,0 +1,7 @@
+services:
+  _defaults:
+    autowire: true
+
+  Logs2ELK\EventSubscriber\ExceptionSubscriber:
+    tags:
+      - { name: 'kernel.event_subscriber' }

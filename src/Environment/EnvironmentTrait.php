@@ -2,6 +2,8 @@
 
 namespace Logs2ELK\Environment;
 
+use Symfony\Component\Dotenv\Dotenv;
+
 trait EnvironmentTrait
 {
 
@@ -11,15 +13,13 @@ trait EnvironmentTrait
     const ERROR = "errors";
     const APPMSG = "appmsg";
     const APPSYS = "appsys";
-    
+
     const E_PRD = 'prod';
     const E_DEV = 'dev';
     const E_PREPROD = 'preprod';
     const E_STAGE = 'stage';
     const E_LOC = 'local';
     const E_TEST = 'test';
-    
-    const TIMEFORMAT = "Y-m-d H:i:s O";
 
     private $envs = [
         self::E_DEV,
@@ -29,7 +29,7 @@ trait EnvironmentTrait
         self::E_TEST,
         self::E_STAGE,
     ];
-    
+
     public $indexes = [
         self::APPMSG,
         self::APPSYS,

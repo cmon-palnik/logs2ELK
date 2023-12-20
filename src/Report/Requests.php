@@ -2,25 +2,29 @@
 
 namespace Logs2ELK\Report;
 
+use Logs2ELK\ConfigLoader;
+
 class Requests extends AbstractReport
 {
 
     public function requests($params = null)
     {
+        $from = strtotime($this->dateFrom);
+        $to = $this->dateTo ? strtotime($this->dateTo) : $from + (self::$time_step * 60);
 
-        $from = strtotime("2023-10-02 12:00:00");
-        $to = $from + (self::TIME_STEP * 60);
-        $gteTime = gmdate("Y-m-d H:i:s O", $from);
-        $ltTime = gmdate("Y-m-d H:i:s O", $to);
-        $params = self::PARAMS;
+        $gteTime = $this->gmdate($from);
+        $ltTime = $this->gmdate($to);
+
+        $params = $params ?: self::$report_params;
         $params['body']['query']['bool']['filter'][2]['range'] = ['time' => ['gte' => $gteTime, 'lt' => $ltTime]];
-        $params['body']['aggs']['unique_values']['composite']['size'] = self::RESULTS;
+        $params['body']['aggs']['unique_values']['composite']['size'] = self::$results;
+
         $result = [];
         while ($this->lastResults > 0) {
-            echo "fetching " . $params['body']['aggs']['unique_values']['composite']['size'] . " results"
+            $this->writeln("fetching " . $params['body']['aggs']['unique_values']['composite']['size'] . " results"
             . " from " . $params['body']['query']['bool']['filter'][2]['range']['time']['gte']
             . " to " . $params['body']['query']['bool']['filter'][2]['range']['time']['lt']
-            . PHP_EOL;
+            );
 
             $list = $this->getPartR($params, $from, $to);
 
@@ -33,7 +37,7 @@ class Requests extends AbstractReport
             }
 
             $from = $to;
-            $to = $to + (self::TIME_STEP * 60);
+            $to = $to + (self::$time_step * 60);
             $this->updateTimeParams($params, $from, $to);
         }
         arsort($result);
@@ -46,14 +50,15 @@ class Requests extends AbstractReport
         $response = $this->client->search($params);
         $this->lastResults = count($response['aggregations']['unique_values']['buckets']);
 
-        if ($this->lastResults == self::RESULTS) {
-            echo "more results than limit, splitting time" . PHP_EOL;
-            $to = $to - (self::TIME_STEP / 2 * 60);
+        if ($this->lastResults == self::$results) {
+            $this->writeln("more results than limit, splitting time");
+            $to = $to - (self::$time_step / 2 * 60);
             $this->updateTimeParams($params, $from, $to);
             return $this->getPartR($params, $from, $to);
         } else {
-            echo "fetched $this->lastResults " . PHP_EOL;
+            $this->writeln("fetched $this->lastResults ");
         }
+
         // Przetwarzanie wyników
         $values = [];
 

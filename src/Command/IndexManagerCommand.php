@@ -3,6 +3,7 @@
 namespace Logs2ELK\Command;
 
 use Elastic\Elasticsearch\Client;
+use Logs2ELK\ConfigLoader;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -11,37 +12,24 @@ use Logs2ELK\Environment\EnvDefinition;
 
 #[AsCommand(
     name: 'logs2elk:manage-index',
-    description: 'Manage Elasticsearch indexes.',
+    description: 'Manage Elasticsearch indexes',
     hidden: false,
 )]
-class IndexManagerCommand extends Command
+class IndexManagerCommand extends AbstractEnvironmentCommand
 {
     private $dates = [];
     private $allIndexesBaseParams = [];
     private $removeIndexes = [];
     private $checkIndexes = [];
 
-    public function __construct(
-        private Client $client,
-        private EnvDefinition $ed,
-    )
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
-        parent::__construct();
-    }
-    
-    protected function execute(InputInterface $input, OutputInterface $output): int
-    {
-        try {
-            $this->getIndexes();
-            $this->markIndexesToRemove();
-            $this->checkIndexes();
-            $this->removeOldIndexes();
-        } catch (\Exception $ex) {
-            $msg = date("Y-m-d H:i:s") . " GLOBAL EXCEPTION " . PHP_EOL;
-            $msg .= $ex->getMessage() . PHP_EOL;
-            $msg .= $ex->getTraceAsString() . PHP_EOL;
-            $output->writeln($msg);
-        }
+        parent::execute($input, $output);
+
+        $this->getIndexes();
+        $this->markIndexesToRemove();
+        $this->checkIndexes();
+        $this->removeOldIndexes();
 
         return Command::SUCCESS;
     }
@@ -50,12 +38,12 @@ class IndexManagerCommand extends Command
     {
         foreach ($this->ed->indexes as $index) {
             $indexPrefix = $this->ed->buildIndexPrefix($index) . "*";
-            $indexes = $this->client->cat()->indices(array('index' => $indexPrefix));
+            $indexes = $this->client->cat()->indices(array('index' => $indexPrefix))->asArray();
             if (!empty($indexes)) {
                 $this->sortIndexes($indexes);
-                echo "found " . count($indexes) . " indexes for pattern:" . $indexPrefix . PHP_EOL;
+                $this->writeln("found " . count($indexes) . " indexes for pattern:" . $indexPrefix);
             } else {
-                echo "no indexes for pattern:" . $indexPrefix . PHP_EOL;
+                $this->writeln("no indexes for pattern:" . $indexPrefix);
             }
         }
     }
@@ -89,7 +77,7 @@ class IndexManagerCommand extends Command
     private function removeOldIndexes()
     {
         foreach ($this->removeIndexes as $index) {
-            echo "deleting index $index" . PHP_EOL;
+            $this->writeln("deleting index $index");
             $this->client->indices()->delete(['index' => $index]);
         }
     }
@@ -97,10 +85,9 @@ class IndexManagerCommand extends Command
     private function checkIndexes()
     {
         foreach ($this->checkIndexes as $index) {
-            echo "checking index $index" . PHP_EOL;
+            $this->writeln("checking index $index");
             $indexBaseParams = $this->allIndexesBaseParams[$index]['baseParams'];
-            $configMapping = \App\ConfigurationManager::loadMappingConfig(__DIR__ . "/../config/mapping-" . $indexBaseParams[0] . ".yml");
-            //$configMapping = json_decode(file_get_contents(__DIR__ . "/../config/mapping-" . $indexBaseParams[0] . ".json"), true);
+            $configMapping = $this->ed->loadMapping($indexBaseParams[0]);
             $mapping = $this->client->indices()->getMapping(['index' => $index]);
             $nm = $mapping[$index]['mappings']['properties']['time'];
             $sm = $configMapping['properties']['time'];
