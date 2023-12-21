@@ -8,7 +8,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
-use Logs2ELK\Environment\EnvDefinition;
+use Logs2ELK\Environment\Environment;
 
 #[AsCommand(
     name: 'logs2elk:manage-index',
@@ -38,7 +38,8 @@ class IndexManagerCommand extends AbstractEnvironmentCommand
     {
         foreach ($this->ed->indexes as $index) {
             $indexPrefix = $this->ed->buildIndexPrefix($index) . "*";
-            $indexes = $this->client->cat()->indices(array('index' => $indexPrefix))->asArray();
+            $indexes = $this->client->cat()->indices(array('index' => $indexPrefix))->getBody()->getContents();
+            dump($indexes);
             if (!empty($indexes)) {
                 $this->sortIndexes($indexes);
                 $this->writeln("found " . count($indexes) . " indexes for pattern:" . $indexPrefix);

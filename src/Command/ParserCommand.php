@@ -7,7 +7,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
-use Logs2ELK\Environment\EnvDefinition;
+use Logs2ELK\Environment\Environment;
 
 #[AsCommand(
     name: 'logs2elk:parse',

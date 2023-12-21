@@ -2,10 +2,13 @@ services:
   _defaults:
     autowire: true
     public: true
-  
+
   Elastic\Elasticsearch\Client:
     class: Elastic\Elasticsearch\Client
     factory: ['Elastic\Elasticsearch\ClientBuilder', 'fromConfig']
     arguments:
       $config:
         Hosts: ['%env(ELASTIC_URL)%']
+        BasicAuthentication:
+          - '%env(ELASTIC_USER)%'
+          - '%env(ELASTIC_PASSWORD)%'

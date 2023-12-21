@@ -5,7 +5,7 @@ namespace Logs2ELK;
 use Logs2ELK\GeneralExceptionCode as Code;
 use Symfony\Component\Console\Output\OutputInterface;
 
-trait WriteToOutputTrait
+trait OutputInterfaceTrait
 {
     protected OutputInterface $output;
 

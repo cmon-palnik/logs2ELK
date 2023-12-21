@@ -7,19 +7,18 @@ use foroco\BrowserDetection;
 use Logs2ELK\ConfigLoader;
 use Symfony\Component\Console\Input\InputInterface;
 
-class EnvDefinition
+class Environment
 {
     use EnvironmentTrait;
 
-    private $env = '';
-    private $indexType = '';
-    private $host = '';
+    private string $env = '';
+    private string $indexType = '';
+    private string $host = '';
+    private $application = 'undefined';
 
-    public static $mapErrorFields = [
+    public static array $mapErrorFields = [
         'type', 'message', 'file', 'line', 'trace'
     ];
-
-    private $application = 'undefined';
 
     public function __construct(
         private BrowserDetection $browser,

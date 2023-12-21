@@ -4,7 +4,7 @@ namespace Logs2ELK\Command;
 
 use Exception;
 use Elastic\Elasticsearch\Client;
-use Logs2ELK\Environment\EnvDefinition;
+use Logs2ELK\Environment\Environment;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

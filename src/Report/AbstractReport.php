@@ -6,13 +6,13 @@ use Elastic\Elasticsearch\Client;
 use Logs2ELK\ConfigLoader;
 use Logs2ELK\GeneralException;
 use Logs2ELK\GeneralExceptionCode as Code;
-use Logs2ELK\WriteToOutputTrait;
+use Logs2ELK\OutputInterfaceTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class AbstractReport
 {
-    use WriteToOutputTrait;
+    use OutputInterfaceTrait;
 
     public static int $results = 10000;
     public static int $time_step = 60;
