@@ -1,7 +1,7 @@
 <?php
 namespace Logs2ELK;
 
-class GeneralException extends \Exception
+class Exception extends \Exception
 {
 
     /**

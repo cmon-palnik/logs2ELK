@@ -9,7 +9,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 
 #[AsCommand(
     name: 'logs2elk:manage-index',
-    description: 'Manage Elasticsearch indexes',
+    description: 'Manage Elk indexes: get all, check, remove old ones',
     hidden: false,
 )]
 class IndexManagerCommand extends AbstractEnvironmentCommand

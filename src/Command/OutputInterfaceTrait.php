@@ -2,7 +2,7 @@
 
 namespace Logs2ELK\Command;
 
-use Logs2ELK\GeneralExceptionCode as Code;
+use Logs2ELK\ExceptionCode as Code;
 use Symfony\Component\Console\Output\OutputInterface;
 
 trait OutputInterfaceTrait

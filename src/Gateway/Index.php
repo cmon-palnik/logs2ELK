@@ -2,28 +2,20 @@
 
 namespace Logs2ELK\Gateway;
 
-use Elastic\Elasticsearch\Client;
 use Elastic\Elasticsearch\Endpoints\Indices;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use GuzzleHttp\Promise\Promise;
-use Logs2ELK\GeneralException;
-use Logs2ELK\GeneralExceptionCode as Code;
+use Logs2ELK\ExceptionCode as Code;
 
-class Index
+class Index extends AbstractGateway
 {
-
-    public function __construct(protected Client $client)
-    {
-
-    }
 
     public function create(array $params): bool
     {
         $response = $this->indices()
             ->create($params);
-        if (!$response->asBool()) {
-            throw GeneralException::withCode(Code::CANNOT_CREATE_INDEX, $params);
-        }
+
+        $this->exceptionWhenBadResponse($response, Code::CANNOT_CREATE_INDEX, $params);
         return true;
     }
 
@@ -32,9 +24,8 @@ class Index
         $params = ['index' => $index];
         $response = $this->indices()
             ->delete($params);
-        if (!$response->asBool()) {
-            throw GeneralException::withCode(Code::CANNOT_DELETE_INDEX, $params);
-        }
+
+        $this->exceptionWhenBadResponse($response, Code::CANNOT_DELETE_INDEX, $params);
         return true;
     }
     public function exists(string $index): bool
@@ -48,9 +39,8 @@ class Index
     {
         $params = ['index' => $name];
         $response = $this->get($params);
-        if (!$response->asBool()) {
-            throw GeneralException::withCode(Code::CANNOT_GET_INDEXES, $params);
-        }
+
+        $this->exceptionWhenBadResponse($response, Code::CANNOT_GET_INDEXES, $params);
         if(empty($response->asString())) {
             return [];
         }
@@ -63,19 +53,24 @@ class Index
 
     public function getMapping(string $index): array
     {
-        return $this->indices()
-            ->getMapping(['index' => $index])
-            ->asArray();
+        $params = ['index' => $index];
+        $response = $this->indices()
+            ->getMapping($params);
+
+        $this->exceptionWhenBadResponse($response, Code::CANNOT_GET_MAPPING, $params);
+        if (empty($response->asString())) {
+            return [];
+        }
+        return $response->asArray();
     }
-    public function put($index, $body)
+    public function put($index, $body): void
     {
         $params = ['body' => $body, 'index' => $index];
         $response = $this->client
             ->index($params);
-        if (!$response->asBool()) {
-            throw GeneralException::withCode(Code::CANNOT_CREATE_INDEX, $params);
-        }
-        return true;
+
+        $this->exceptionWhenBadResponse($response, Code::CANNOT_INDEX_DATA, $params);
+        return;
     }
 
     public function indices(): Indices {

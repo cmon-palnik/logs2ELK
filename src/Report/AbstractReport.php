@@ -4,8 +4,6 @@ namespace Logs2ELK\Report;
 
 use Logs2ELK\ConfigLoader;
 use Logs2ELK\Gateway\Search;
-use Logs2ELK\GeneralException;
-use Logs2ELK\GeneralExceptionCode as Code;
 use Logs2ELK\Command\OutputInterfaceTrait;
 use Symfony\Component\Console\Input\InputInterface;
 

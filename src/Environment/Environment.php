@@ -2,9 +2,10 @@
 
 namespace Logs2ELK\Environment;
 
-use Exception;
 use foroco\BrowserDetection;
 use Logs2ELK\ConfigLoader;
+use Logs2ELK\Exception;
+use Logs2ELK\ExceptionCode as Code;
 use Symfony\Component\Console\Input\InputInterface;
 
 class Environment
@@ -25,7 +26,6 @@ class Environment
         private ConfigLoader $loader
     )
     {
-
     }
 
     public function applyCLIArgs(InputInterface $input): void
@@ -60,7 +60,9 @@ class Environment
     {
         $indexType = $indexType ?: $this->indexType;
         $mapping = $this->loader->loadYaml("mappings/$indexType.yml");
-        return $mapping['properties'];
+        if (!key_exists('properties', $mapping) || empty($mapping['properties'])) {
+            throw Exception::withCode(Code::EMPTY_OR_BAD_MAPPING);
+        }
     }
 
     public function parseLineByType($data = [])
@@ -80,18 +82,18 @@ class Environment
             case self::INDEX:
             case self::WPINDEX:
                 if (isset($data['logLevel'])) {
-                    throw new Exception("Not an access log");
+                    throw new \Exception("Not an access log");
                 }
                 return $this->parseLineTraffic($data);
             case self::WPERROR:
             case self::ERROR:
                 if (!isset($data['logLevel'])) {
-                    throw new Exception("Not an error log");
+                    throw new \Exception("Not an error log");
                 }
                 return $this->parseLineError($data);
             case self::APPMSG:
                 if (!isset($data['level_name'])) {
-                    throw new Exception("Not an error log");
+                    throw new \Exception("Not an error log");
                 }
                 return $this->parseLineMsg($data);
             case self::APPSYS:
@@ -142,7 +144,7 @@ class Environment
             $data = array_merge($data, $msg);
         } else {
             //if other formats should be supported, please write code in this elif block
-            throw new Exception("PHP PARSE ERROR " . $data['errorMessage']);
+            throw new \Exception("PHP PARSE ERROR " . $data['errorMessage']);
         }
         if (strpos($data['errorMessage'], "Stack trace") !== false) {
             $mm = [];

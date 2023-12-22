@@ -9,7 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
     name: 'logs2elk:sysstat',
-    description: 'Update sysstat',
+    description: 'Parse and index current sysstat',
     hidden: false,
 )]
 class SysStatCommand extends AbstractEnvironmentCommand
@@ -23,6 +23,7 @@ class SysStatCommand extends AbstractEnvironmentCommand
 
         if (!$this->index->exists($index)) {
             $indexParams = $this->env->getIndexParams($index);
+            dump($indexParams);
             $this->index->create($indexParams);
         }
 

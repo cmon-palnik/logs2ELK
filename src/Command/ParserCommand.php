@@ -9,7 +9,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 
 #[AsCommand(
     name: 'logs2elk:parse',
-    description: 'Parse logs (from stdin) and index them in Elasticsearch',
+    description: 'Parse log (from stdin) and index it in Elk',
     hidden: false,
 )]
 class ParserCommand extends AbstractEnvironmentCommand
