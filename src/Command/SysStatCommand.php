@@ -2,9 +2,6 @@
 
 namespace Logs2ELK\Command;
 
-use Exception;
-use Elastic\Elasticsearch\Client;
-use Logs2ELK\Environment\Environment;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -22,22 +19,16 @@ class SysStatCommand extends AbstractEnvironmentCommand
     {
         parent::execute($input, $output);
 
-        $index = $this->ed->getIndexName();
+        $index = $this->env->getIndexName();
 
-        if (!$this->client->indices()->exists(['index' => $index])) {
-            $indexParams = $this->ed->getIndexParams($index);
-            $this->client->indices()->create($indexParams);
+        if (!$this->index->exists($index)) {
+            $indexParams = $this->env->getIndexParams($index);
+            $this->index->create($indexParams);
         }
 
-        try {
-            $params = ['body' => $this->ed->parseLineByType(), 'index' => $index];
-            $response = $this->client->index($params);
-            $output->writeln($response);
+        $this->index->put($index, $this->env->parseLineByType());
 
-        } catch (Exception $ex) {
-            $output->writeln($ex->getMessage());
-        }
-
+        $output->writeln('Done.');
         return Command::SUCCESS;
     }
 }

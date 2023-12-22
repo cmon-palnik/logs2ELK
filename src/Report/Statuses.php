@@ -22,7 +22,7 @@ class Statuses extends AbstractReport
         } else {
             $params['body']['query']['bool']['filter'][]['match_phrase']['requestURI'] = $requestURI;
         }
-        $response = $this->client->search($params);
+        $response = $this->search($params);
         if (empty($response['aggregations']['cnta']['buckets'])) {
             print_r([
                 $params['body']['query']['bool']['filter'],

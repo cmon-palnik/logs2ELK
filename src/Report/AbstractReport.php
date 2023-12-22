@@ -2,13 +2,12 @@
 
 namespace Logs2ELK\Report;
 
-use Elastic\Elasticsearch\Client;
 use Logs2ELK\ConfigLoader;
+use Logs2ELK\Gateway\Search;
 use Logs2ELK\GeneralException;
 use Logs2ELK\GeneralExceptionCode as Code;
-use Logs2ELK\OutputInterfaceTrait;
+use Logs2ELK\Command\OutputInterfaceTrait;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class AbstractReport
 {
@@ -25,7 +24,7 @@ abstract class AbstractReport
     protected ?string $dateTo;
 
     public function __construct(
-        protected Client $client,
+        protected Search $index,
         protected ConfigLoader $loader,
     )
     {
@@ -42,6 +41,11 @@ abstract class AbstractReport
         $this->dateFrom = $input->getArgument('dateFrom');
         $this->dateTo = $input->getArgument('dateTo');
         return $this;
+    }
+
+    protected function search($params): array
+    {
+        return $this->index->search($params);
     }
 
     protected function gmdate(int $time): string

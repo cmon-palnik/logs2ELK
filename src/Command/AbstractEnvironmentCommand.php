@@ -2,10 +2,9 @@
 
 namespace Logs2ELK\Command;
 
-use Elastic\Elasticsearch\Client;
 use Logs2ELK\Environment\Environment;
 use Logs2ELK\Environment\EnvironmentTrait;
-use Logs2ELK\OutputInterfaceTrait;
+use Logs2ELK\Gateway\Index;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Completion\CompletionInput;
 use Symfony\Component\Console\Input\InputArgument;
@@ -18,8 +17,8 @@ abstract class AbstractEnvironmentCommand extends AbstractCommand
     use EnvironmentTrait;
 
     public function __construct(
-        protected Client      $client,
-        protected Environment $ed,
+        protected Index       $index,
+        protected Environment $env,
     )
     {
         parent::__construct();
@@ -28,7 +27,7 @@ abstract class AbstractEnvironmentCommand extends AbstractCommand
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         parent::execute($input, $output);
-        $this->ed->applyCLIArgs($input);
+        $this->env->applyCLIArgs($input);
         return Command::SUCCESS;
     }
 

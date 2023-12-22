@@ -1,6 +1,6 @@
 <?php
 
-namespace Logs2ELK;
+namespace Logs2ELK\Command;
 
 use Logs2ELK\GeneralExceptionCode as Code;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -9,9 +9,14 @@ trait OutputInterfaceTrait
 {
     protected OutputInterface $output;
 
-    protected function writeln(mixed $output)
+    protected function writeln(iterable|string $output): void
     {
         $this->getOutputInterface()->writeln($output);
+    }
+
+    protected function write(iterable|string $output): void
+    {
+        $this->getOutputInterface()->write($output);
     }
 
     protected function setOutputInterface(OutputInterface $output)

@@ -1,7 +1,6 @@
 services:
   _defaults:
     autowire: true
-    public: true
 
   Elastic\Elasticsearch\Client:
     class: Elastic\Elasticsearch\Client
@@ -12,3 +11,7 @@ services:
         BasicAuthentication:
           - '%env(ELASTIC_USER)%'
           - '%env(ELASTIC_PASSWORD)%'
+
+  Logs2ELK\Gateway\Index: ~
+
+  Logs2ELK\Gateway\Search: ~

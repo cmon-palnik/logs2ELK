@@ -53,8 +53,7 @@ class ReportCommand extends AbstractCommand
         $this->statuses->setReportDates($input)->generate($requests);
         $this->averageClientToProxy->setReportDates($input)->generate($requests);
 
-        $output->writeln('DONE');
-
+        $output->writeln('Done.');
         return Command::SUCCESS;
     }
 }

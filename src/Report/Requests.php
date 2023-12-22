@@ -2,8 +2,6 @@
 
 namespace Logs2ELK\Report;
 
-use Logs2ELK\ConfigLoader;
-
 class Requests extends AbstractReport
 {
 
@@ -47,7 +45,7 @@ class Requests extends AbstractReport
 
     public function getPartR(&$params, $from, $to)
     {
-        $response = $this->client->search($params);
+        $response = $this->search($params);
         $this->lastResults = count($response['aggregations']['unique_values']['buckets']);
 
         if ($this->lastResults == self::$results) {

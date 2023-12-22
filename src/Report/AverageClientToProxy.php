@@ -21,7 +21,7 @@ class AverageClientToProxy extends AbstractReport
         } else {
             $params['body']['query']['bool']['filter'][]['match_phrase']['requestURI'] = $requestURI;
         }
-        $response = $this->client->search($params);
+        $response = $this->search($params);
         return $response['aggregations']['avgtime']['value'];
     }
 }

@@ -2,12 +2,11 @@
 
 namespace Logs2ELK\Command;
 
-use Logs2ELK\OutputInterfaceTrait;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class AbstractCommand extends Command
+abstract class AbstractCommand extends Command
 {
     use OutputInterfaceTrait;
 

@@ -23,7 +23,7 @@ class Kernel extends BaseKernel
             }
         }
     }
-    
+
     public function getProjectDir(): string
     {
         return \dirname(__DIR__);
@@ -41,5 +41,5 @@ class Kernel extends BaseKernel
         $loader->load($confDir.'/{services}'.self::CONFIG_EXTS, 'glob');
         $loader->load($confDir.'/{services}_'.$this->environment.self::CONFIG_EXTS, 'glob');
     }
-    
+
 }
