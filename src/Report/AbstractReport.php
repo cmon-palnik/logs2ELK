@@ -11,11 +11,11 @@ abstract class AbstractReport
 {
     use OutputInterfaceTrait;
 
-    public static int $results = 10000;
-    public static int $time_step = 60;
-    public static array $report_params = [];
+    protected static int $results = 10000;
+    protected static int $time_step = 60;
+    protected static array $report_params = [];
 
-    public string $filename = "";
+    protected string $filename = "";
     protected int $lastResults = 0;
 
     protected string $dateFrom;
@@ -49,11 +49,6 @@ abstract class AbstractReport
     protected function gmdate(int $time): string
     {
         return gmdate(ConfigLoader::getTimeFormat(), $time);
-    }
-
-    public function read()
-    {
-        return json_decode(file_get_contents($this->filename), true);
     }
 
     public function generate($requests)

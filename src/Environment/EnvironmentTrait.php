@@ -2,8 +2,6 @@
 
 namespace Logs2ELK\Environment;
 
-use Symfony\Component\Dotenv\Dotenv;
-
 trait EnvironmentTrait
 {
 

@@ -34,6 +34,11 @@ class Environment
         $this->env = $input->getArgument('envType');
         $this->application = $input->getArgument('applicationName');
         $this->host = explode(".", gethostname())[0];
+
+        if (!in_array($this->indexType, $this->indexes) || !in_array($this->env, $this->envs)) {
+            throw Exception::withCode(Code::BAD_ARGS_UNDEFINED_ENV_OR_INDEX_TYPE);
+        }
+
     }
 
     public function buildIndexPrefix($indexType)
@@ -63,6 +68,7 @@ class Environment
         if (!key_exists('properties', $mapping) || empty($mapping['properties'])) {
             throw Exception::withCode(Code::EMPTY_OR_BAD_MAPPING);
         }
+        return $mapping;
     }
 
     public function parseLineByType($data = [])

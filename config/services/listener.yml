@@ -1,7 +1,9 @@
 services:
   _defaults:
     autowire: true
+    public: true
 
-  Logs2ELK\EventSubscriber\ExceptionSubscriber:
+  Logs2ELK\EventListener\ConsoleErrorListener:
     tags:
-      - { name: 'kernel.event_subscriber' }
+      - { name: 'kernel.event_listener', event: console.error }
+

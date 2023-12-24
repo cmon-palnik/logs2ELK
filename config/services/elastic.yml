@@ -12,6 +12,8 @@ services:
           - '%env(ELASTIC_USER)%'
           - '%env(ELASTIC_PASSWORD)%'
 
+  Symfony\Component\OptionsResolver\OptionsResolver: ~
+
   Logs2ELK\Gateway\Index: ~
 
   Logs2ELK\Gateway\Search: ~

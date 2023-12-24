@@ -23,10 +23,9 @@ class SysStatCommand extends AbstractEnvironmentCommand
 
         if (!$this->index->exists($index)) {
             $indexParams = $this->env->getIndexParams($index);
-            dump($indexParams);
             $this->index->create($indexParams);
         }
-
+        $output->writeln('Sending a line to ELK...');
         $this->index->put($index, $this->env->parseLineByType());
 
         $output->writeln('Done.');

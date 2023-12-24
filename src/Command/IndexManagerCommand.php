@@ -2,6 +2,8 @@
 
 namespace Logs2ELK\Command;
 
+use Logs2ELK\Exception;
+use Logs2ELK\ExceptionCode as Code;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -21,7 +23,13 @@ class IndexManagerCommand extends AbstractEnvironmentCommand
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        parent::execute($input, $output);
+        try {
+            parent::execute($input, $output);
+        } catch (Exception $ex) {
+            if ($ex->is(Code::BAD_ARGS_UNDEFINED_ENV_OR_INDEX_TYPE)) {
+                $output->writeln('NOTICE: This command ignores params as it scans all indexes.' . PHP_EOL);
+            }
+        }
 
         $this->getIndexes();
         $this->markIndexesToRemove();
@@ -41,9 +49,9 @@ class IndexManagerCommand extends AbstractEnvironmentCommand
 
             if (!empty($indexes)) {
                 $this->sortIndexes($indexes);
-                $this->writeln("-> found " . count($indexes) . " indexes for pattern:" . $indexPrefix);
+                $this->writeln("-> Found " . count($indexes) . " indexes for pattern: " . $indexPrefix);
             } else {
-                $this->writeln("-> no indexes for pattern:" . $indexPrefix);
+                $this->writeln("-> No indexes for pattern: " . $indexPrefix);
             }
         }
     }
@@ -75,6 +83,29 @@ class IndexManagerCommand extends AbstractEnvironmentCommand
         $this->writeln('Old indexes marked to remove: ' . count($this->removeIndexes));
     }
 
+    private function checkIndexes()
+    {
+        foreach ($this->checkIndexes as $index) {
+            $this->write("Checking index $index..");
+            $indexBaseParams = $this->allIndexesBaseParams[$index]['baseParams'];
+
+            $configMapping = $this->env->loadMapping($indexBaseParams[0]);
+            $mapping = $this->index->getMapping($index);
+
+            $nm = $mapping[$index]['mappings']['properties']['time'];
+            $sm = $configMapping['properties']['time'];
+
+            $diff = array_diff_assoc($sm, $nm);
+
+            if (!empty($diff)) {
+                $this->removeIndexes[] = $index;
+                $this->writeln('. marked to delete.');
+            } else {
+                $this->writeln('.');
+            }
+        }
+    }
+
     private function removeOldIndexes()
     {
         foreach ($this->removeIndexes as $index) {
@@ -84,22 +115,4 @@ class IndexManagerCommand extends AbstractEnvironmentCommand
         }
     }
 
-    private function checkIndexes()
-    {
-        foreach ($this->checkIndexes as $index) {
-            $this->write("Checking index $index..");
-            $indexBaseParams = $this->allIndexesBaseParams[$index]['baseParams'];
-            $configMapping = $this->env->loadMapping($indexBaseParams[0]);
-            $mapping = $this->index->getMapping($index);
-            $nm = $mapping[$index]['mappings']['properties']['time'];
-            $sm = $configMapping['properties']['time'];
-            $diff = array_diff_assoc($sm, $nm);
-            if (!empty($diff)) {
-                $this->removeIndexes[] = $index;
-                $this->writeln('. marked to delete.');
-            } else {
-                $this->writeln('.');
-            }
-        }
-    }
 }

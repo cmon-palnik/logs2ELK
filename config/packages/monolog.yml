@@ -1,0 +1,11 @@
+monolog:
+  handlers:
+    main:
+      type: stream
+      path: "%kernel.logs_dir%/%kernel.environment%.log"
+#      channels: ["!event"]
+
+### @todo
+# 1) CREATE CHANNELS
+# 2) TO HAVE EXAMPLE LOGS
+# 3) TO HAVE A MONOLOG PARSER

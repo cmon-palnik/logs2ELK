@@ -5,10 +5,14 @@ namespace Logs2ELK\Gateway;
 use Elastic\Elasticsearch\Client;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use Logs2ELK\ElkException;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class AbstractGateway
 {
-    public function __construct(protected Client $client)
+    public function __construct(
+        protected Client $client,
+        protected OptionsResolver $optionsResolver
+    )
     {
     }
 

@@ -5,6 +5,7 @@ namespace Logs2ELK\Gateway;
 use Elastic\Elasticsearch\Endpoints\Indices;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use GuzzleHttp\Promise\Promise;
+use Logs2ELK\ElkException;
 use Logs2ELK\ExceptionCode as Code;
 
 class Index extends AbstractGateway
@@ -37,18 +38,40 @@ class Index extends AbstractGateway
 
     public function getIndexesByName($name): array
     {
-        $params = ['index' => $name];
+        $params = ['index' => $name, 'format' => 'json'];
         $response = $this->get($params);
 
         $this->exceptionWhenBadResponse($response, Code::CANNOT_GET_INDEXES, $params);
         if(empty($response->asString())) {
             return [];
         }
-        return $response->asArray();
+        try {
+            return $response->asArray();
+        } catch (\Exception $ex) {
+            throw ElkException::withCode(
+                Code::CANNOT_GET_INDEXES,
+                array_merge($params, [
+                    'reason' => 'No JSON in response'
+                ])
+            );
+        }
     }
+
     public function get($params): Elasticsearch|Promise
     {
-        return $this->client->cat()->indices($params);
+        $this->optionsResolver->clear()->setDefaults([
+            'index' => '',
+            'format' => 'json',
+        ]);
+
+        $response = $this->client->cat()->indices(
+            $this->optionsResolver->resolve($params)
+        );
+
+        if ($response instanceof Promise) {
+            return $response->then(fn($result) => $result);
+        }
+        return $response;
     }
 
     public function getMapping(string $index): array
