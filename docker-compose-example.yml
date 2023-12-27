@@ -1,0 +1,53 @@
+version: '3.8'
+
+volumes:
+  mysqldata:
+    driver: local
+
+services:
+
+  ### wordpress + logs2elk
+  wordpress:
+    build:
+      context: ./docker/example
+      dockerfile: ./Dockerfile
+    depends_on:
+      es01:
+        condition: service_healthy
+    volumes:
+      - certs:/usr/local/share/ca-certificates/elk
+      - ./var/wordpress:/var/www/html
+      - ./:/app
+    ports:
+      - '8080:80'
+    environment:
+      # HTTP_HOST: http://localhost:8080
+      # WORDPRESS_DB_HOST: mysql      # default
+      # WORDPRESS_DB_NAME: wordpress  # default
+      WORDPRESS_TABLE_PREFIX: l2e_
+      WORDPRESS_DB_USER: wp
+      WORDPRESS_DB_PASSWORD: 1q2w3e4r
+      WORDPRESS_CONFIG_EXTRA: ''
+
+  mysql:
+    image: 'mysql:8.0'
+    volumes:
+      - mysqldata:/var/lib/mysql
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: 1q2w3e4r
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wp
+      MYSQL_PASSWORD: 1q2w3e4r
+
+  pma:
+    image: 'phpmyadmin/phpmyadmin'
+    ports:
+      - '9020:80'
+    depends_on:
+      - mysql
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: 1q2w3e4r

@@ -6,3 +6,5 @@ cmon@cmonDell:~/prj/logs2ELK/docker$ sudo chmod go-w metricbeat.yml
 
 There are several methods of running the application. The basic one is 
 <describe docker configs>
+
+wp-install
