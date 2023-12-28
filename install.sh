@@ -3,6 +3,7 @@
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 INSTALL_PATH=/usr/local/logs2elk
 BIN_PATH=/usr/local/bin
+ENVIRONMENT="${1:-dev}"
 
 echo "Logs2ELK installer"
 echo "------------------"
@@ -21,45 +22,8 @@ fi
 
 # Is there composer?
 if ! [ -x "$(command -v composer)" ]; then
-  INSTALL_COMPOSER=false
-
-  if [ "$1" == "--auto" ]; then
-    INSTALL_COMPOSER=true
-  else
-    echo "Composer not installed."
-
-    read -p "Do you want to download and install Composer? (Y/n): " -r answer
-    answer=${answer,,}  # to lowercase
-
-    if [ -z "$answer" ] || [ "$answer" == "y" ]; then
-      INSTALL_COMPOSER=true
-    else
-      echo "Composer is required. Exited."
-      exit 1
-    fi
-  fi
-
-  if [ "$INSTALL_COMPOSER" == true ]; then
-    EXPECTED_CHECKSUM="$(php -r 'copy("https://composer.github.io/installer.sig", "php://stdout");')"
-    php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-    ACTUAL_CHECKSUM="$(php -r "echo hash_file('sha384', 'composer-setup.php');")"
-
-    if [ "$EXPECTED_CHECKSUM" != "$ACTUAL_CHECKSUM" ]
-    then
-        >&2 echo 'ERROR: Invalid Composer installer checksum. Exited.'
-        rm composer-setup.php
-        exit 1
-    fi
-
-    php composer-setup.php --quiet
-    RESULT=$?
-    rm composer-setup.php
-
-    if [ "$RESULT" == 1 ]; then
-      echo "Composer installation problem. Exited."
-      exit 1
-    fi
-  fi
+  echo "Composer not installed. Exited."
+  exit 1
 fi
 
 echo "Running Composer..."
@@ -104,7 +68,7 @@ $mysudo cp -R bin config docker src var vendor $INSTALL_PATH
 $mysudo cp .en* composer.* dev-comp* docker-comp* README.md $INSTALL_PATH
 
 echo "Creating .env.local..."
-echo "APP_ENV=prod" | $mysudo tee $INSTALL_PATH/.env.local >/dev/null
+echo "APP_ENV=$ENVIRONMENT" | $mysudo tee $INSTALL_PATH/.env.local >/dev/null
 
 $mysudo chown -R www-data:www-data $INSTALL_PATH
 $mysudo chmod +x $INSTALL_PATH/bin/console

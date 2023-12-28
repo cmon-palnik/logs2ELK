@@ -17,7 +17,6 @@ services:
     volumes:
       - certs:/usr/local/share/ca-certificates/elk
       - ./var/wordpress:/var/www/html
-      - ./:/app
     ports:
       - '8080:80'
     environment:
