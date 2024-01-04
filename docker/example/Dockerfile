@@ -1,6 +1,6 @@
 FROM wordpress:apache
 
-RUN apt-get update && apt-get install -y less git cron
+RUN apt-get update && apt-get install -y less git cron nano mariadb-client
 
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
     chmod +x wp-cli.phar && mv wp-cli.phar /usr/local/bin/wp
@@ -45,3 +45,4 @@ RUN echo "30 5 * * * www-data logs2elk logs2elk:manage >> /var/log/cron.log 2>&1
 #    '}' > /etc/logrotate.d/wordpress
 
 COPY wp-install.sh /usr/local/bin/
+COPY fn-generate-random-error.php /var/www/html/

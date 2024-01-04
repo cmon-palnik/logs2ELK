@@ -17,6 +17,7 @@ services:
     volumes:
       - certs:/usr/local/share/ca-certificates/elk
       - ./var/wordpress:/var/www/html
+      - ./docker/example/plugins:/var/www/html/wp-content/plugins
     ports:
       - '8080:80'
     environment:
@@ -26,7 +27,10 @@ services:
       WORDPRESS_TABLE_PREFIX: l2e_
       WORDPRESS_DB_USER: wp
       WORDPRESS_DB_PASSWORD: 1q2w3e4r
-      WORDPRESS_CONFIG_EXTRA: ''
+      WORDPRESS_DEBUG: 'true'
+      WORDPRESS_CONFIG_EXTRA: >
+        define('WP_DEBUG_LOG', true);
+        if (file_exists(__DIR__ . '/fn-generate-random-error.php')) require_once __DIR__ . '/fn-generate-random-error.php';
 
   mysql:
     image: 'mysql:8.0'
