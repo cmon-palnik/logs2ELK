@@ -2,6 +2,7 @@
 
 namespace Logs2ELK\Command;
 
+use Logs2ELK\Exception;
 use Logs2ELK\ExceptionCode as Code;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -19,7 +20,7 @@ trait OutputInterfaceTrait
         $this->getOutputInterface()->write($output);
     }
 
-    protected function setOutputInterface(OutputInterface $output)
+    protected function setOutputInterface(OutputInterface $output): void
     {
         $this->output = $output;
     }
@@ -27,12 +28,12 @@ trait OutputInterfaceTrait
     protected function getOutputInterface(): OutputInterface
     {
         if (empty($this->output)) {
-            throw GeneralException::withCode(Code::TOO_EARLY_INVOCATION);
+            throw Exception::withCode(Code::TOO_EARLY_INVOCATION);
         }
         return $this->output;
     }
 
-    public function setOutputInterfaceToServices()
+    public function setOutputInterfaceToServices(): void
     {
         foreach (get_object_vars($this) as $obj) {
             if (!is_object($obj)) {

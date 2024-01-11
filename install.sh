@@ -67,8 +67,12 @@ $mysudo mkdir -p $INSTALL_PATH
 $mysudo cp -R bin config docker src var vendor $INSTALL_PATH
 $mysudo cp .en* composer.* dev-comp* docker-comp* README.md $INSTALL_PATH
 
-echo "Creating .env.local..."
-echo "APP_ENV=$ENVIRONMENT" | $mysudo tee $INSTALL_PATH/.env.local >/dev/null
+if [ "$ENVIRONMENT" == 'prod' ]; then
+  $mysudo rm $INSTALL_PATH/.env.dev
+else
+  echo "Creating .env.local..."
+  echo "APP_ENV=$ENVIRONMENT" | $mysudo tee $INSTALL_PATH/.env.local >/dev/null
+fi
 
 $mysudo chown -R www-data:www-data $INSTALL_PATH
 $mysudo chmod +x $INSTALL_PATH/bin/console

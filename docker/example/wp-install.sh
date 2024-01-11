@@ -8,5 +8,7 @@ wp core is-installed --allow-root || wp core install --allow-root --url=localhos
 chown -R www-data:www-data /var/www/html
 chmod -R g+w /var/www/html
 
+update-ca-certificates
+
 echo "add_action('init', 'generate_random_error');" >>/var/www/html/wp-content/themes/twentytwentyfour/functions.php
 exec "$@"

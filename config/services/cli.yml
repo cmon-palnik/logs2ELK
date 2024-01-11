@@ -2,12 +2,9 @@ services:
   _defaults:
     autowire: true
     autoconfigure: true
-     
+
   Logs2ELK\Command\IndexManagerCommand: ~
-      
+
   Logs2ELK\Command\ParserCommand: ~
-  
-  Logs2ELK\Command\ReportCommand: ~
-  
+
   Logs2ELK\Command\SysStatCommand: ~
-  

@@ -13,7 +13,6 @@ abstract class AbstractCommand extends Command
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->setOutputInterface($output);
-        $this->setOutputInterfaceToServices();
         return Command::SUCCESS;
     }
 }

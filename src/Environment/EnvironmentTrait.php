@@ -9,7 +9,6 @@ trait EnvironmentTrait
     const WPERROR = "wperrors";
     const INDEX = "index";
     const ERROR = "errors";
-    const APPMSG = "appmsg";
     const APPSYS = "appsys";
 
     const E_PRD = 'prod';
@@ -29,11 +28,11 @@ trait EnvironmentTrait
     ];
 
     public $indexes = [
-        self::APPMSG,
-        self::APPSYS,
-        self::ERROR,
         self::INDEX,
-        self::WPERROR,
+        self::ERROR,
         self::WPINDEX,
+        self::WPERROR,
+        self::APPSYS,
     ];
+
 }

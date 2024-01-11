@@ -1,8 +1,7 @@
 <?php
 
-namespace Logs2ELK\Gateway;
+namespace Logs2ELK\ElasticGateway;
 
-use Logs2ELK\Exception;
 use Logs2ELK\ExceptionCode as Code;
 
 class Search extends AbstractGateway

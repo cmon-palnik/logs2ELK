@@ -1,6 +1,6 @@
 <?php
 
-namespace Logs2ELK\Gateway;
+namespace Logs2ELK\ElasticGateway;
 
 use Elastic\Elasticsearch\Endpoints\Indices;
 use Elastic\Elasticsearch\Response\Elasticsearch;
@@ -86,14 +86,15 @@ class Index extends AbstractGateway
         }
         return $response->asArray();
     }
+
     public function put($index, $body): void
     {
         $params = ['body' => $body, 'index' => $index];
         $response = $this->client
             ->index($params);
-
+        /** @todo remove */
+echo json_encode($params) . "\n";
         $this->exceptionWhenBadResponse($response, Code::CANNOT_INDEX_DATA, $params);
-        return;
     }
 
     public function indices(): Indices {

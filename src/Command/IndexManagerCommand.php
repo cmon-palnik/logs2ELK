@@ -2,6 +2,8 @@
 
 namespace Logs2ELK\Command;
 
+use Logs2ELK\ConfigLoader;
+use Logs2ELK\Environment\EnvironmentTrait;
 use Logs2ELK\Exception;
 use Logs2ELK\ExceptionCode as Code;
 use Symfony\Component\Console\Command\Command;
@@ -10,7 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 
 #[AsCommand(
-    name: 'logs2elk:manage-index',
+    name: 'logs2elk:manage-indexes',
     description: 'Manage Elk indexes: get all, check, remove old ones',
     hidden: false,
 )]
@@ -20,6 +22,8 @@ class IndexManagerCommand extends AbstractEnvironmentCommand
     private $allIndexesBaseParams = [];
     private $removeIndexes = [];
     private $checkIndexes = [];
+
+    use EnvironmentTrait;
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -43,7 +47,7 @@ class IndexManagerCommand extends AbstractEnvironmentCommand
     private function getIndexes()
     {
         $this->writeln('Getting ELK indexes...');
-        foreach ($this->env->indexes as $index) {
+        foreach ($this->indexes as $index) {
             $indexPrefix = $this->env->buildIndexPrefix($index) . "*";
             $indexes = $this->index->getIndexesByName($indexPrefix);
 
@@ -67,11 +71,10 @@ class IndexManagerCommand extends AbstractEnvironmentCommand
 
     private function markIndexesToRemove()
     {
-        $allowedDates = [
-            date("Y.W"),
-            date("Y.W", strtotime("-1 week")),
-            date("Y.W", strtotime("-2 week")),
-        ];
+        $allowedDates = [ date("Y.W") ];
+        for ($i = 1; $i < ConfigLoader::getWeeksToKeep(); $i++) {
+            $allowedDates[] = date("Y.W", strtotime("-{$i} week"));
+        }
 
         foreach ($this->dates as $date => $indexes) {
             if (!in_array($date, $allowedDates)) {

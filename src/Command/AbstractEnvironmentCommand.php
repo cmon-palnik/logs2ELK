@@ -2,9 +2,10 @@
 
 namespace Logs2ELK\Command;
 
+use Logs2ELK\ConfigLoader;
 use Logs2ELK\Environment\Environment;
 use Logs2ELK\Environment\EnvironmentTrait;
-use Logs2ELK\Gateway\Index;
+use Logs2ELK\ElasticGateway\Index;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Completion\CompletionInput;
 use Symfony\Component\Console\Input\InputArgument;
@@ -31,25 +32,25 @@ abstract class AbstractEnvironmentCommand extends AbstractCommand
         return Command::SUCCESS;
     }
 
-    public function configure()
+    public function configure(): void
     {
         $this->addConstrainedArgument(
             'indexType',
             'index',
-            self::INDEX,
+            ConfigLoader::getArgDefault('INDEX_TYPE'),
             $this->indexes
         );
         $this->addConstrainedArgument(
             'envType',
             'environment',
-            self::E_DEV,
+            ConfigLoader::getArgDefault('ENV_TYPE'),
             $this->envs
         );
         $this->addArgument(
             'applicationName',
             InputArgument::OPTIONAL,
-            'Name of the application. Default: undefined',
-            'undefined'
+            'Name of the logged application. Default: undefined',
+            ConfigLoader::getArgDefault('APPLICATION_NAME'),
         );
     }
 
@@ -58,7 +59,7 @@ abstract class AbstractEnvironmentCommand extends AbstractCommand
         $this->addArgument(
             $name,
             InputArgument::OPTIONAL,
-            "Type of the {$description}. Default: " . self::INDEX .
+            "Type of the {$description}. Default: " . $default .
                 'Available values: ' . implode(', ', $availableValues) . '.',
             $default,
             function (CompletionInput $input) use ($availableValues): array {

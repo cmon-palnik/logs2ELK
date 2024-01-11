@@ -33,7 +33,7 @@ class Environment
         $this->indexType = $input->getArgument('indexType');
         $this->env = $input->getArgument('envType');
         $this->application = $input->getArgument('applicationName');
-        $this->host = explode(".", gethostname())[0];
+        $this->host = ConfigLoader::getHostname();
 
         if (!in_array($this->indexType, $this->indexes) || !in_array($this->env, $this->envs)) {
             throw Exception::withCode(Code::BAD_ARGS_UNDEFINED_ENV_OR_INDEX_TYPE);
@@ -97,11 +97,6 @@ class Environment
                     throw new \Exception("Not an error log");
                 }
                 return $this->parseLineError($data);
-            case self::APPMSG:
-                if (!isset($data['level_name'])) {
-                    throw new \Exception("Not an error log");
-                }
-                return $this->parseLineMsg($data);
             case self::APPSYS:
                 return $this->parseLineSys($data);
         }
@@ -132,6 +127,7 @@ class Environment
     public function parsePHPErrorLog($data)
     {
         $data['errorMessage'] = str_replace(PHP_EOL, '\\n', $data['errorMessage']);
+        // ^\[(.+)\] PHP ([a-zA-Z\s]+):\s+(.+)\s+in\s+(.+)( on line |:)(\d+)
         preg_match_all("@^PHP ([a-zA-Z\s]+):\s+(.+)\s+in\s+(.+) on line (\d+)@i", $data['errorMessage'], $m);
         unset($m[0]);
         $replace = array_column($m, "0");
@@ -143,7 +139,7 @@ class Environment
             $data['inLine'] = $parsed['line'];
             $data['inFile'] = $parsed['file'];
             $data['errorType'] = $data['errorType'] . ": PHP " . $parsed['type'];
-        } elseif (strpos($data['errorMessage'], "base64") === 0) {
+        } elseif (str_starts_with($data['errorMessage'], "base64")) {
             preg_match_all("@base64:(.+)@i", $data['errorMessage'], $m);
             $msg = json_decode(base64_decode($m[1][0]), true);
             $msg['client'] = $this->getClientFromForwarded($msg['HeaderXForwardedFor']);
@@ -179,19 +175,7 @@ class Environment
         return $data;
     }
 
-    public function parseLineMsg($data)
-    {
-        $data['inFile'] = $data['context'];
-        $data['inLine'] = "0";
-        $data['wpType'] = "";
-        $data['errorMessage'] = $data['message'];
-        $data['stackTrace'] = $data['extra'];
-        $data['errorType'] = $data['level_name'];
-        $data['wpLocation'] = $data['channel'];
-        return $data;
-    }
-
-    public function parseLineSys($data)
+    public function parseLineSys(array $data = []): array
     {
         $data['time'] = date(ConfigLoader::getTimeFormat());
         unset($data['client'], $data['HeaderXForwardedFor']);
@@ -201,7 +185,7 @@ class Environment
         return $data;
     }
 
-    private function getNetstatFormatted()
+    private function getNetstatFormatted(): array
     {
         $d = array_map('trim', explode(PHP_EOL, trim(shell_exec("netstat -la | grep tcp | awk -F ' ' {'print $5,$6'} | sort | uniq -c"))));
         $r = [];
@@ -221,7 +205,7 @@ class Environment
         return $r;
     }
 
-    private function getClientFromForwarded($forwarded)
+    private function getClientFromForwarded(string $forwarded): string
     {
         $forwardeda = explode(",", $forwarded)[0];
         $client = trim(explode(":", $forwardeda)[0]);
@@ -229,7 +213,7 @@ class Environment
         return $clientf ? $clientf : "0.0.0.0";
     }
 
-    public function excludeUA($logline)
+    public function excludeUA(string $logline): bool
     {
         switch ($this->indexType) {
             case self::INDEX:
