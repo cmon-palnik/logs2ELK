@@ -92,8 +92,6 @@ class Index extends AbstractGateway
         $params = ['body' => $body, 'index' => $index];
         $response = $this->client
             ->index($params);
-        /** @todo remove */
-echo json_encode($params) . "\n";
         $this->exceptionWhenBadResponse($response, Code::CANNOT_INDEX_DATA, $params);
     }
 

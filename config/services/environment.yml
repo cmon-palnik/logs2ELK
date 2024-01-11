@@ -6,4 +6,4 @@ services:
 
   Logs2ELK\ConfigLoader: ~
 
-  Logs2ELK\Environment\Environment: ~
+  Logs2ELK\Environment\Parser: ~

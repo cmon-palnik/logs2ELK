@@ -3,8 +3,7 @@
 namespace Logs2ELK\Command;
 
 use Logs2ELK\ConfigLoader;
-use Logs2ELK\Environment\EnvironmentTrait;
-use Logs2ELK\Exception;
+use Logs2ELK\Environment\Type\Index as IndexType;
 use Logs2ELK\ExceptionCode as Code;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -16,20 +15,18 @@ use Symfony\Component\Console\Attribute\AsCommand;
     description: 'Manage Elk indexes: get all, check, remove old ones',
     hidden: false,
 )]
-class IndexManagerCommand extends AbstractEnvironmentCommand
+class IndexManagerCommand extends AbstractParserCommand
 {
     private $dates = [];
     private $allIndexesBaseParams = [];
     private $removeIndexes = [];
     private $checkIndexes = [];
 
-    use EnvironmentTrait;
-
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
             parent::execute($input, $output);
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             if ($ex->is(Code::BAD_ARGS_UNDEFINED_ENV_OR_INDEX_TYPE)) {
                 $output->writeln('NOTICE: This command ignores params as it scans all indexes.' . PHP_EOL);
             }
@@ -47,8 +44,8 @@ class IndexManagerCommand extends AbstractEnvironmentCommand
     private function getIndexes()
     {
         $this->writeln('Getting ELK indexes...');
-        foreach ($this->indexes as $index) {
-            $indexPrefix = $this->env->buildIndexPrefix($index) . "*";
+        foreach (IndexType::values() as $index) {
+            $indexPrefix = $this->parser->buildIndexPrefix($index) . "*";
             $indexes = $this->index->getIndexesByName($indexPrefix);
 
             if (!empty($indexes)) {
@@ -92,7 +89,7 @@ class IndexManagerCommand extends AbstractEnvironmentCommand
             $this->write("Checking index $index..");
             $indexBaseParams = $this->allIndexesBaseParams[$index]['baseParams'];
 
-            $configMapping = $this->env->loadMapping($indexBaseParams[0]);
+            $configMapping = $this->parser->loadMapping($indexBaseParams[0]);
             $mapping = $this->index->getMapping($index);
 
             $nm = $mapping[$index]['mappings']['properties']['time'];

@@ -12,22 +12,22 @@ use Symfony\Component\Console\Attribute\AsCommand;
     description: 'Parse log (from stdin) and index it in Elk',
     hidden: false,
 )]
-class ParserCommand extends AbstractEnvironmentCommand
+class ParserCommand extends AbstractParserCommand
 {
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         parent::execute($input, $output);
-        $index = $this->env->getIndexName();
+        $index = $this->parser->getIndexName();
 
 
         if (!$this->index->exists($index)) {
-            $indexParams = $this->env->getIndexParams($index);
+            $indexParams = $this->parser->getIndexParams($index);
             $this->index->create($indexParams);
         }
 
         while ($line = fgets(STDIN)) {
-            if ($this->env->excludeUA($line)) {
+            if ($this->parser->excludeUserAgent($line)) {
                 $output->writeln("EXCLUDED LOG: $line");
                 continue;
             }
@@ -39,7 +39,7 @@ class ParserCommand extends AbstractEnvironmentCommand
 
             $data['message'] = $line;
             try {
-                $this->index->put($index, $this->env->parseLineByType($data));
+                $this->index->put($index, $this->parser->parseLineByType($data));
             } catch (\Exception $ex) {
                 $output->writeln($ex->getMessage());
                 continue;

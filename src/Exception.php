@@ -22,7 +22,7 @@ class Exception extends \Exception
         $this->context = $context;
     }
 
-    public static function withCode(string $code, array $context = [])
+    public static function withCode(string $code, array $context = []): static
     {
         return new static($code, $code, $context);
     }

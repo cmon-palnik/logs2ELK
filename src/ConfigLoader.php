@@ -2,7 +2,8 @@
 
 namespace Logs2ELK;
 
-use Logs2ELK\Environment\EnvironmentTrait;
+use Logs2ELK\Environment\Type\Env;
+use Logs2ELK\Environment\Type\Index;
 use Logs2ELK\ExceptionCode as Code;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Yaml\Yaml;
@@ -10,11 +11,9 @@ use Symfony\Component\Yaml\Yaml;
 class ConfigLoader
 {
 
-    use EnvironmentTrait;
-
     private const ENV_DEFAULTS = [
-        'DEFAULT_INDEX_TYPE' => self::INDEX,
-        'DEFAULT_ENV_TYPE' => self::E_DEV,
+        'DEFAULT_INDEX_TYPE' => Index::INDEX,
+        'DEFAULT_ENV_TYPE' => Env::DEV,
         'DEFAULT_APPLICATION_NAME' => 'defaultApp',
         'TIME_FORMAT' => 'Y-m-d H:i:s O',
         'WEEKS_TO_KEEP' => 3
@@ -53,8 +52,11 @@ class ConfigLoader
     private static function getENV(string $L2E_ENV): string|null
     {
         $key = "L2E_$L2E_ENV";
-        echo $key . $_ENV[$key] . self::ENV_DEFAULTS[$L2E_ENV];
-        return $_ENV[$key] ?? self::ENV_DEFAULTS[$L2E_ENV] ?? null;
+        $default = self::ENV_DEFAULTS[$L2E_ENV];
+        if ($default instanceof Index || $default instanceof Env) {
+            $default = $default->value;
+        }
+        return $_ENV[$key] ?? $default ?? null;
     }
 
     public static function getTimeFormat(): string
@@ -72,7 +74,7 @@ class ConfigLoader
     {
         $result = self::getENV("DEFAULT_$L2E_DEFAULT_ENV");
         if (is_null($result)) {
-            throw Exception::withCode(Code::UNKNOWN_ERROR . "DEFAULT_$L2E_DEFAULT_ENV" );
+            throw Exception::withCode(Code::MISSING_ENV_VAR, ['var' => "DEFAULT_$L2E_DEFAULT_ENV"]);
         }
         return $result;
     }

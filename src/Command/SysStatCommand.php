@@ -12,21 +12,21 @@ use Symfony\Component\Console\Output\OutputInterface;
     description: 'Parse and index current sysstat',
     hidden: false,
 )]
-class SysStatCommand extends AbstractEnvironmentCommand
+class SysStatCommand extends AbstractParserCommand
 {
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         parent::execute($input, $output);
 
-        $index = $this->env->getIndexName();
+        $index = $this->parser->getIndexName();
 
         if (!$this->index->exists($index)) {
-            $indexParams = $this->env->getIndexParams($index);
+            $indexParams = $this->parser->getIndexParams($index);
             $this->index->create($indexParams);
         }
         $output->writeln('Sending a line to ELK...');
-        $this->index->put($index, $this->env->parseLineByType());
+        $this->index->put($index, $this->parser->parseLineByType());
 
         $output->writeln('Done.');
         return Command::SUCCESS;
