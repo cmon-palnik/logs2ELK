@@ -1,5 +1,4 @@
 <?php
-
 function generate_random_error() {
     $random_number = rand(1, 10);
 

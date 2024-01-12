@@ -10,5 +10,11 @@ chmod -R g+w /var/www/html
 
 update-ca-certificates
 
-echo "add_action('init', 'generate_random_error');" >>/var/www/html/wp-content/themes/twentytwentyfour/functions.php
+FUNCTIONS=/var/www/html/wp-content/themes/twentytwentyfour/functions.php
+if ! grep -q 'generate_random_error' $FUNCTIONS; then
+echo "require_once 'fn.php'; \
+  add_action('init', 'generate_random_error');" \
+  >>$FUNCTIONS
+fi
+
 exec "$@"

@@ -30,19 +30,9 @@ RUN set -ex; \
     bash install.sh prod
 
 RUN echo "30 5 * * * www-data logs2elk logs2elk:manage >> /var/log/cron.log 2>&1" | crontab
-# configure logrotate and add after rotate action, eg.
-# RUN echo '/var/www/log/debug.log {\n' \
-#    '    daily\n' \
-#    '    rotate 7\n' \
-#    '    compress\n' \
-#    '    delaycompress\n' \
-#    '    missingok\n' \
-#    '    notifempty\n' \
-#    '    create 0644 www-data www-data\n' \
-#    '    postrotate\n' \
-#    '        cat $1 | logs2elk logs2elk:parse\n' \
-#    '    endscript\n' \
-#    '}' > /etc/logrotate.d/wordpress
+COPY log.conf /etc/apache2/conf-enabled/
+COPY vhost.conf /etc/apache2/sites-enabled/000-default.conf
 
-COPY wp-install.sh /usr/local/bin/
-COPY fn-generate-random-error.php /var/www/html/
+COPY apache2-wordpress.sh /usr/local/bin/
+
+ENTRYPOINT ["docker-entrypoint.sh", "apache2-wordpress.sh", "apache2-foreground"]

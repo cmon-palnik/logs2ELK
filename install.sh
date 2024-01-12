@@ -50,7 +50,7 @@ if ! [ -x "$(command -v sudo)" ] && [ "$EUID" -ne 0 ]; then
   elif [ -x "$(command -v apk)" ]; then
     apk add --no-cache sudo
   else
-    echo "Cannot install sudo. There are no appropriate commands for managing packages. Exited."
+    echo "Cannot install sudo. There are no appropriate commands for managing package. Exited."
     exit 1
   fi
 fi
