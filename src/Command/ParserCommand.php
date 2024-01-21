@@ -12,7 +12,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
     description: 'Parse log (from stdin) and index it in Elk',
     hidden: false,
 )]
-class ParserCommand extends AbstractParserCommand
+final class ParserCommand extends AbstractParserCommand
 {
 
     public function execute(InputInterface $input, OutputInterface $output): int

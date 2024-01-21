@@ -12,7 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
     description: 'Parse and index current sysstat',
     hidden: false,
 )]
-class SysStatCommand extends AbstractParserCommand
+final class SysStatCommand extends AbstractParserCommand
 {
 
     public function execute(InputInterface $input, OutputInterface $output): int

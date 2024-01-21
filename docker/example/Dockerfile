@@ -29,10 +29,13 @@ RUN set -ex; \
     cd ~/logs2ELK && \
     bash install.sh prod
 
-RUN echo "30 5 * * * www-data logs2elk logs2elk:manage >> /var/log/cron.log 2>&1" | crontab
+RUN set -ex; \
+    COMMAND="www-data /usr/local/bin/logs2elk" \
+    echo 0 4 1,14 * * $COMMAND logs2elk:manage >/proc/1/fd/1 2>&1 | crontab \
+    echo * * * * *  $COMMAND logs2elk:sysstat appsys prod wp >/proc/1/fd/1 2>&1 | crontab
+
 COPY log.conf /etc/apache2/conf-enabled/
 COPY vhost.conf /etc/apache2/sites-enabled/000-default.conf
-
 COPY apache2-wordpress.sh /usr/local/bin/
 
 ENTRYPOINT ["docker-entrypoint.sh", "apache2-wordpress.sh", "apache2-foreground"]

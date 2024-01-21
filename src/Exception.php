@@ -9,10 +9,7 @@ class Exception extends \Exception
      */
     protected $code;
 
-    /**
-     * @var array
-     */
-    private $context = [];
+    private array $context;
 
     public function __construct(string $message, string $code, array $context = [])
     {
