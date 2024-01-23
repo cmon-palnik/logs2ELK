@@ -39,7 +39,7 @@ class Environment
 
     public function loadMapping(?string $indexType = null): array
     {
-        $indexType = $indexType ?: $this->indexType;
+        $indexType = $indexType ?: $this->indexType->value;
         $mapping = $this->loader->loadYaml("mappings/$indexType.yml");
         if (!key_exists('properties', $mapping) || empty($mapping['properties'])) {
             throw Exception::withCode(Code::EMPTY_OR_BAD_MAPPING);

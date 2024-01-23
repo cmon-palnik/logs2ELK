@@ -34,6 +34,7 @@ final class ParserCommand extends AbstractParserCommand
 
             $data = json_decode($line, true);
             if (!$data) {
+                $output->writeln("EMPTY LINE OR BAD JSON: $line");
                 continue;
             }
 
