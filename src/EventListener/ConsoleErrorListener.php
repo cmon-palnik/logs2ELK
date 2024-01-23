@@ -30,8 +30,4 @@ class ConsoleErrorListener
         $this->logger->info($msg);
     }
 
-    public function setLogger(LoggerInterface $logger): void
-    {
-        $this->logger = $logger;
-    }
 }

@@ -52,7 +52,7 @@ class ConfigLoader
     private static function getENV(string $L2E_ENV): string|null
     {
         $key = "L2E_$L2E_ENV";
-        $default = self::ENV_DEFAULTS[$L2E_ENV];
+        $default = self::ENV_DEFAULTS[$L2E_ENV] ?? '';
         if ($default instanceof Index || $default instanceof Env) {
             $default = $default->value;
         }

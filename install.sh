@@ -65,11 +65,9 @@ fi
 echo "Copying files..."
 $mysudo mkdir -p $INSTALL_PATH
 $mysudo cp -R bin config docker src var vendor $INSTALL_PATH
-$mysudo cp .en* composer.* dev-comp* docker-comp* README.md $INSTALL_PATH
+$mysudo cp .env README.md $INSTALL_PATH
 
-if [ "$ENVIRONMENT" = 'prod' ]; then
-  $mysudo rm $INSTALL_PATH/.env.dev
-else
+if [ "$ENVIRONMENT" != 'prod' ]; then
   echo "Creating .env.local..."
   echo "APP_ENV=$ENVIRONMENT" | $mysudo tee $INSTALL_PATH/.env.local >/dev/null
 fi

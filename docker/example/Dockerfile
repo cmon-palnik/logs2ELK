@@ -31,8 +31,8 @@ RUN set -ex; \
 
 RUN set -ex; \
     COMMAND="www-data /usr/local/bin/logs2elk" \
-    echo 0 4 1,14 * * $COMMAND logs2elk:manage >/proc/1/fd/1 2>&1 | crontab \
-    echo * * * * *  $COMMAND logs2elk:sysstat appsys prod wp >/proc/1/fd/1 2>&1 | crontab
+    echo "0 4 1,14 * * $COMMAND logs2elk:manage >/proc/1/fd/1 2>&1" | crontab \
+    echo "* * * * *  $COMMAND logs2elk:sysstat appsys prod wp >/proc/1/fd/1 2>&1" | crontab
 
 COPY log.conf /etc/apache2/conf-enabled/
 COPY vhost.conf /etc/apache2/sites-enabled/000-default.conf
