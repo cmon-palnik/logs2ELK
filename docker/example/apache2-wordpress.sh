@@ -12,8 +12,8 @@ update-ca-certificates
 service cron start
 
 FUNCTIONS=/var/www/html/wp-content/themes/twentytwentyfour/functions.php
-if ! grep -q 'generate_random_error' $FUNCTIONS; then
-  echo "add_action('init', 'generate_random_error');" >>$FUNCTIONS
+if ! grep -q 'error_gen.php' $FUNCTIONS; then
+  echo "\$fle = __DIR__.'/error_gen.php'; if (file_exists(\$fle)) require_once \$fle;" >>$FUNCTIONS
 fi
 
 exec "$@"

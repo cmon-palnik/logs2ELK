@@ -32,7 +32,7 @@ final class ParserCommand extends AbstractParserCommand
                 continue;
             }
 
-            $data = json_decode($line, true);
+            $data = JsonDecoder::decode($line);
             if (!$data) {
                 $output->writeln("EMPTY LINE OR BAD JSON: $line");
                 continue;

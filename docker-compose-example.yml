@@ -18,7 +18,7 @@ services:
       - certs:/usr/local/share/ca-certificates/elk
       - ./var/wordpress:/var/www/html
       - ./docker/example/plugins:/var/www/html/wp-content/plugins
-      - ./docker/example/fn.php:/var/www/html/fn.php
+      - ./docker/example/error_gen.php:/var/www/html/wp-content/themes/twentytwentyfour/error_gen.php
     ports:
       - '8080:80'
     environment:
@@ -28,9 +28,6 @@ services:
       WORDPRESS_TABLE_PREFIX: l2e_
       WORDPRESS_DB_USER: wp
       WORDPRESS_DB_PASSWORD: 1q2w3e4r
-      WORDPRESS_DEBUG: 'false'
-      WORDPRESS_CONFIG_EXTRA: >
-        if (file_exists(__DIR__ . '/fn.php')) require_once __DIR__ . '/fn.php';
 
   mysql:
     image: 'mysql:8.0'
