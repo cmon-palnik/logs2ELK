@@ -28,9 +28,8 @@ services:
       WORDPRESS_TABLE_PREFIX: l2e_
       WORDPRESS_DB_USER: wp
       WORDPRESS_DB_PASSWORD: 1q2w3e4r
-      WORDPRESS_DEBUG: 'true'
+      WORDPRESS_DEBUG: 'false'
       WORDPRESS_CONFIG_EXTRA: >
-        define('WP_DEBUG_LOG', true);
         if (file_exists(__DIR__ . '/fn.php')) require_once __DIR__ . '/fn.php';
 
   mysql:
