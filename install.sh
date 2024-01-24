@@ -66,6 +66,8 @@ echo "Copying files..."
 $mysudo mkdir -p $INSTALL_PATH
 $mysudo cp -R bin config docker src var vendor $INSTALL_PATH
 $mysudo cp .env README.md $INSTALL_PATH
+$mysudo mkdir -p $INSTALL_PATH/var/cache $INSTALL_PATH/var/log
+$mysudo touch $INSTALL_PATH/var/log/$ENVIRONMENT.log
 
 if [ "$ENVIRONMENT" != 'prod' ]; then
   echo "Creating .env.local..."

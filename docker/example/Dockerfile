@@ -1,6 +1,6 @@
 FROM wordpress:apache
 
-RUN apt-get update && apt-get install -y less git cron nano mariadb-client
+RUN apt-get update && apt-get install -y less git cron nano mariadb-client net-tools mc sudo
 
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
     chmod +x wp-cli.phar && mv wp-cli.phar /usr/local/bin/wp
@@ -29,12 +29,11 @@ RUN set -ex; \
     cd ~/logs2ELK && \
     bash install.sh prod
 
+COPY cronjobs /etc/cron.d/cronjobs
 RUN set -ex; \
-    COMMAND="www-data /usr/local/bin/logs2elk"; \
-    echo "0 4 1,14 * * $COMMAND logs2elk:manage >/proc/1/fd/1 2>&1" | crontab; \
-    echo "* * * * *  $COMMAND logs2elk:sysstat appsys prod wp >/proc/1/fd/1 2>&1" | crontab; \
+    chmod 0644 /etc/cron.d/cronjobs; \
+    crontab /etc/cron.d/cronjobs; \
     sed -i 's/error_log = \/dev\/stderr//g' /usr/local/etc/php/conf.d/error-logging.ini
-
 
 COPY log.conf /etc/apache2/conf-enabled/
 COPY vhost.conf /etc/apache2/sites-enabled/000-default.conf

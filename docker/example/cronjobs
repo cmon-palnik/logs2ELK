@@ -1,0 +1,2 @@
+0 4 1,14 * * sudo -u www-data php /usr/local/bin/logs2elk logs2elk:manage >/proc/1/fd/1 2>&1
+* * * * *  sudo -u www-data php /usr/local/bin/logs2elk logs2elk:sysstat appsys prod wp >/proc/1/fd/1 2>&1

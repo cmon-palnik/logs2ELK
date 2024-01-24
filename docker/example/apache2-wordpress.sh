@@ -9,6 +9,7 @@ chown -R www-data:www-data /var/www/html
 chmod -R g+w /var/www/html
 
 update-ca-certificates
+service cron start
 
 FUNCTIONS=/var/www/html/wp-content/themes/twentytwentyfour/functions.php
 if ! grep -q 'generate_random_error' $FUNCTIONS; then
