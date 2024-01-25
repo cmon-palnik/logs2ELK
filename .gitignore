@@ -10,3 +10,7 @@ nbproject
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
+
+###> logs2ELK ###
+/docker/.metric
+###< logs2ELK ###

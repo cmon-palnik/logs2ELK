@@ -1,3 +1,6 @@
 #!/bin/bash
-cd $PWD
-USE_EXTERNAL_ELK=false docker-compose -f docker-compose.yml -f docker-compose-elk.yml "${1:-up}" ${@:2}
+# shellcheck disable=SC2164
+SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
+cd "$SCRIPT_PATH"
+./docker/chown_metricbeat.sh
+USE_EXTERNAL_ELK=false docker-compose -f docker-compose.yml -f docker-compose-elk.yml "${1:-up}" "${@:2}"
