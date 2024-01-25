@@ -38,5 +38,6 @@ RUN set -ex; \
 COPY log.conf /etc/apache2/conf-enabled/
 COPY vhost.conf /etc/apache2/sites-enabled/000-default.conf
 COPY apache2-wordpress.sh /usr/local/bin/
+COPY error_gen.php /root/
 
 ENTRYPOINT ["docker-entrypoint.sh", "apache2-wordpress.sh", "apache2-foreground"]

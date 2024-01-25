@@ -18,7 +18,6 @@ services:
       - certs:/usr/local/share/ca-certificates/elk
       - ./var/wordpress:/var/www/html
       - ./docker/example/plugins:/var/www/html/wp-content/plugins
-      - ./docker/example/error_gen.php:/var/www/html/wp-content/themes/twentytwentyfour/error_gen.php
     ports:
       - '8080:80'
     environment:
