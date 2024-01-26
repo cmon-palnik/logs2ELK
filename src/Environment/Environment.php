@@ -8,6 +8,7 @@ use Logs2ELK\Environment\Type\Env;
 use Logs2ELK\Environment\Type\Index;
 use Logs2ELK\Exception;
 use Logs2ELK\ExceptionCode as Code;
+use Psr\Log\LoggerInterface;
 
 class Environment
 {
@@ -19,7 +20,8 @@ class Environment
 
     public function __construct(
         protected BrowserDetection $browser,
-        protected ConfigLoader $loader
+        protected ConfigLoader $loader,
+        protected LoggerInterface $logger
     )
     {
     }

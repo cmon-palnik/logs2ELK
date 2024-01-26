@@ -10,7 +10,7 @@ class JsonDecoder
 
         if (empty($decodedData) && json_last_error() !== JSON_ERROR_NONE) {
             $jsonString = static::fixJsonString($json);
-            $decodedData = json_decode($jsonString);
+            $decodedData = json_decode($jsonString, $associative);
         }
 
         return $decodedData;

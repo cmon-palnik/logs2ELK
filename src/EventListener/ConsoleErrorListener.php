@@ -6,11 +6,11 @@ use Logs2ELK\Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Event\ConsoleErrorEvent;
 
-class ConsoleErrorListener
+final readonly class ConsoleErrorListener
 {
 
     public function __construct(
-        private LoggerInterface $logger
+        private readonly LoggerInterface $logger
     )
     {
     }
@@ -27,7 +27,7 @@ class ConsoleErrorListener
         }
         $msg .= "[TRACE] " . $ex->getTraceAsString() . PHP_EOL;
         echo $msg;
-        $this->logger->info($msg);
+        $this->logger->critical($msg);
     }
 
 }

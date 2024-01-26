@@ -26,7 +26,9 @@ final class SysStatCommand extends AbstractParserCommand
             $this->index->create($indexParams);
         }
         $output->writeln('Sending a line to ELK...');
-        $this->index->put($index, $this->parser->parseLineByType());
+        $this->index->put($index, $this->parser->parseLineByType(
+            ['HeaderXForwardedFor' => '-']
+        ));
 
         $output->writeln('Done.');
         return Command::SUCCESS;

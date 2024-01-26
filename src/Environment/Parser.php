@@ -60,7 +60,7 @@ class Parser extends Environment
         $data['wpType'] = "";
         $data['wpLocation'] = "";
         $data['responseTime'] = "0";
-        if (isset($data['apacheModule']) && in_array($data['apacheModule'], ['php7', 'php8'])) {
+        if (str_starts_with($data['apacheModule'] ?? '', 'php')) {
             $data = $this->parsePHPErrorLog($data);
         }
         unset($data['logLevel'], $data['module']);
@@ -70,8 +70,7 @@ class Parser extends Environment
     public function parsePHPErrorLog(array $data): array
     {
         $data['errorMessage'] = str_replace(PHP_EOL, '\\n', $data['errorMessage']);
-        // ^\[(.+)\] PHP ([a-zA-Z\s]+):\s+(.+)\s+in\s+(.+)( on line |:)(\d+)
-        preg_match_all("@^PHP ([a-zA-Z\s]+):\s+(.+)\s+in\s+(.+) on line (\d+)@i", $data['errorMessage'], $m);
+        preg_match_all("@^PHP ([a-zA-Z\s]+):\s+(.+)\s+in\s+(.+)( on line |:)(\d+)@i", $data['errorMessage'], $m);
         unset($m[0]);
         $replace = array_column($m, "0");
         $replace[] = "";
@@ -157,9 +156,9 @@ class Parser extends Environment
     private function getClientFromForwarded(?string $forwarded): string
     {
         $forwardeda = explode(",", $forwarded)[0];
-        $client = trim(explode(":", $forwardeda)[0]);
+        $client = trim(explode(":", $forwardeda ?? '')[0]);
         $clientf = filter_var($client, FILTER_VALIDATE_IP);
-        return $clientf ? $clientf : "0.0.0.0";
+        return $clientf ?: "0.0.0.0";
     }
 
     public function excludeUserAgent(string $logline): bool
