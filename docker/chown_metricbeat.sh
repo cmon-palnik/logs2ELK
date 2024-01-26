@@ -4,7 +4,7 @@ SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 FILE=$SCRIPT_PATH/metricbeat.yml
 OWNER=$(stat -c %U "$FILE")
 
-if [ -f .metric ]; then
+if [ -f "$SCRIPT_PATH/.metric" ]; then
     source "$SCRIPT_PATH/.metric"
 fi
 
