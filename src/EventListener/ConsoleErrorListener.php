@@ -10,7 +10,7 @@ final readonly class ConsoleErrorListener
 {
 
     public function __construct(
-        private readonly LoggerInterface $logger
+        private LoggerInterface $logger
     )
     {
     }

@@ -76,7 +76,7 @@ class Parser extends Environment
         $replace = array_column($m, "0");
         $replace[] = "";
         $parsed = [];
-
+        $this->logger->warning('parse PHP error cd.: ' .serialize($replace));
         if (count($replace) == 5) {
             $replaceWith = self::$mapErrorFields;
             $parsed = array_combine($replaceWith, $replace);

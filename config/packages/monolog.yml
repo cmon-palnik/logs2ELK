@@ -3,7 +3,7 @@ monolog:
     main:
       type: stream
       path: "%kernel.logs_dir%/%kernel.environment%.log"
-#      channels: ["!event"]
+      channels: ["!event"]
 
 ### @todo
 # 1) CREATE CHANNELS
