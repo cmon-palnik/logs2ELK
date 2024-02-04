@@ -48,6 +48,7 @@ cat xxx.log | logs2elk logs2elk:parse <args>
 * Apache logs MUST be reconfigured to be JSONs. See [log.conf](https://github.com/cmon-palnik/logs2ELK/blob/main/docker/example/log.conf) and [vhost.conf](https://github.com/cmon-palnik/logs2ELK/blob/main/docker/example/vhost.conf) for details.
 * Analyse [example Dockerfile](https://github.com/cmon-palnik/logs2ELK/blob/main/docker/example/Dockerfile) to get to know how to install Logs2ELK in your own environment
 * There is an app log and error listener 4 further dev & debugging
+* There is a specific issue when try to debug logs2elk already attached to apache in the container (see [vhost.conf](https://github.com/cmon-palnik/logs2ELK/blob/main/docker/example/vhost.conf)). Code changes in the install folder (typically /usr/local/logs2elk) **are not reflected until Apache2 is restarted** which means a *need of the service container restart*!
 
 ## @TODO
 * set of basic tests
@@ -56,6 +57,7 @@ cat xxx.log | logs2elk logs2elk:parse <args>
 * default view in Kibana
 * a script to scale the environment (and set appropriate parameters for Logs2ELK)
 * move parsers into separate classes 
+* ELK index as an entity approach - to consider 
 * change the method of passing parameters for parsers
 * recognize error classes in a listener
 
