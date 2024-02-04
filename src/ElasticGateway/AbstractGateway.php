@@ -14,7 +14,6 @@ abstract class AbstractGateway
     public function __construct(
         protected Client $client,
         protected OptionsResolver $optionsResolver,
-        protected LoggerInterface $logger
     )
     {
     }

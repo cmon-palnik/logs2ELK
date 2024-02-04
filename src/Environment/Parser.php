@@ -70,13 +70,11 @@ class Parser extends Environment
     public function parsePHPErrorLog(array $data): array
     {
         $data['errorMessage'] = str_replace(PHP_EOL, '\\n', $data['errorMessage']);
-        preg_match_all("@^PHP ([a-zA-Z\s]+):\s+(.+)\s+in\s+(.+)(?: on line |:)(\d+)@i", $data['errorMessage'], $m);
-        $this->logger->warning('parsePHPerrorLog debug: ' . serialize($m));
+        preg_match_all("@^PHP ([a-zA-Z\s]+):\s+(.+)\s+in\s+(.+)(?: on line |: )(\d+)@i", $data['errorMessage'], $m);
         unset($m[0]);
         $replace = array_column($m, "0");
         $replace[] = "";
         $parsed = [];
-        $this->logger->warning('parse PHP error cd.: ' .serialize($replace));
         if (count($replace) == 5) {
             $replaceWith = self::$mapErrorFields;
             $parsed = array_combine($replaceWith, $replace);
