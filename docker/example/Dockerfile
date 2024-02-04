@@ -27,7 +27,7 @@ RUN set -eux; \
 RUN set -ex; \
     git clone https://github.com/cmon-palnik/logs2ELK.git ~/logs2ELK; \
     cd ~/logs2ELK && \
-    bash install.sh prod
+    bash install.sh dev
 
 COPY cronjobs /etc/cron.d/cronjobs
 RUN set -ex; \

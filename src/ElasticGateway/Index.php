@@ -31,7 +31,6 @@ class Index extends AbstractGateway
     }
     public function exists(string $index): bool
     {
-        $this->logger->warning('EXISTS invoked');
         return $this->indices()
             ->exists(['index' => $index])
             ->asBool();
@@ -91,7 +90,6 @@ class Index extends AbstractGateway
     public function put($index, $body): void
     {
         $params = ['body' => $body, 'index' => $index];
-        $this->logger->warning("debug put: " . serialize($params));
         $response = $this->client
             ->index($params);
         $this->exceptionWhenBadResponse($response, Code::CANNOT_INDEX_DATA, $params);
